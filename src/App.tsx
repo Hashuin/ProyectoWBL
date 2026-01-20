@@ -740,7 +740,9 @@ const FoundersPage = () => (
         <div key={founder.name} className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow hover:border-habboGold/40 hover:bg-white/8 transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             {founder.image ? (
-              <img src={founder.image} alt={founder.name} className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full object-cover border-2 border-habboGold/40 flex-shrink-0 hover:scale-110 transition-transform" />
+              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 flex-shrink-0 hover:scale-110 transition-transform flex items-center justify-center p-1 overflow-hidden">
+                <img src={founder.image} alt={founder.name} className="w-full h-full object-contain" />
+              </div>
             ) : (
               <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 grid place-items-center hover:scale-110 transition-transform flex-shrink-0">
                 <span className="text-lg sm:text-xl md:text-2xl font-black text-habboGold">{founder.name.slice(0, 1)}</span>

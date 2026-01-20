@@ -483,8 +483,12 @@ const Shell = () => {
 };
 
 const HomePage = () => (
-  <section className="grid gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start">
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow">
+  <section className="min-h-screen grid gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start relative px-4 sm:px-5 py-8 sm:py-12" style={{backgroundImage: 'url(/fondo.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', backgroundRepeat: 'no-repeat'}}>
+    {/* Overlay difuminado */}
+    <div className="absolute inset-0 bg-gradient-to-b from-[#0f1018]/45 via-[#0f1018]/65 to-[#0f1018]/80 backdrop-blur-sm pointer-events-none"></div>
+    
+    {/* Cards con z-index para estar sobre el fondo */}
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow relative z-10">
       <div className="section-title mb-4 text-[8px] sm:text-[10px]">Bienvenida</div>
       <h1 className="font-display text-2xl sm:text-3xl md:text-4xl leading-tight mb-3">
         Bienvenido a la World Baseball League de Habbo
@@ -518,7 +522,7 @@ const HomePage = () => (
       </div>
     </div>
 
-    <div className="space-y-4">
+    <div className="space-y-4 relative z-10">
       <div className="bg-habboInk/80 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow">
         <div className="section-title mb-4 text-[8px] sm:text-[10px]">Noticias</div>
         <div className="space-y-3 sm:space-y-4">

@@ -1,6 +1,6 @@
 # Habbo WBL – Liga de Baseball ⚾
 
-Sitio web responsivo con estética Habbo para la World Baseball League. Incluye múltiples secciones: inicio/noticias, calendario, estadísticas MLB-style, temporadas, FAQ, equipos, reglas y créditos. Completamente responsive para desktop, tablet y mobile.
+ Sitio web responsivo con estética Habbo para la World Baseball League. Incluye múltiples secciones: inicio/noticias, estadísticas MLB-style, temporadas, FAQ, equipos, reglas y créditos. Completamente responsive para desktop, tablet y mobile.
 
 ## 🎨 Características
 
@@ -10,7 +10,7 @@ Sitio web responsivo con estética Habbo para la World Baseball League. Incluye 
 - ✅ **Accesible**: Focus states, reduced motion support, WCAG compliance
 - ✅ **Animaciones**: Efectos float, pulse, shimmer, fade-in
 - ✅ **MLB Statistics**: Tablas de líderes, rankings, estadísticas detalladas
-- ✅ **8 Páginas**: Inicio, Calendario, Estadísticas, Temporadas, FAQ, Equipos, Reglas, Créditos
+- ✅ **7 Páginas**: Inicio, Estadísticas, Temporadas, FAQ, Equipos, Reglas, Créditos
 
 ## 📋 Requisitos
 
@@ -53,7 +53,6 @@ package.json
 | Ruta | Nombre | Contenido |
 |------|--------|----------|
 | `/` | Inicio | Noticias, CTA, información general |
-| `/calendar` | Calendario | Próximos juegos, fechas, lugares |
 | `/stats` | Estadísticas | Líderes MLB-style, tabla general, campeón actual |
 | `/seasons` | Temporadas | Información de temporadas actuales |
 | `/faq` | Preguntas frecuentes | Q&A sobre la liga |
@@ -67,7 +66,6 @@ Todos los datos están en `src/App.tsx` en arrays estáticos:
 - `news` — Artículos de inicio
 - `teams` — Información de equipos
 - `seasons` — Datos de temporadas
-- `calendarEvents` — Próximos juegos
 - `faqs` — Preguntas frecuentes
 - `rules` — Reglamento
 - `founders` — Créditos

@@ -5,7 +5,7 @@ const news = [
   {
     title: 'Temporada 5 arranca el 12 de febrero',
     body: 'Nuevas reglas de pitcheo, uniformes retro y modo espectador mejorado en Habbo.',
-    tag: 'Calendario',
+    tag: 'Temporada',
     date: 'Enero 2026'
   },
   {
@@ -110,18 +110,6 @@ const rules = [
     title: 'Formato de temporada',
     description: 'Temporada regular de 24 juegos por equipo, seguida de playoffs al mejor de 7 series. Detalles en Discord.'
   }
-];
-
-const calendarCTA = {
-  title: '¿Quieres enterarte de los próximos juegos?',
-  subtitle: 'Revisa el calendario oficial y programa tus alertas en el Discord.',
-  button: 'Ver calendario'
-};
-
-const calendarEvents = [
-  { matchup: 'Meteors vs Neon Caps', date: '12 Feb · 20:00 HBT', place: 'Habbo Square · Lobby' },
-  { matchup: 'Pirates vs Rockets', date: '15 Feb · 19:00 HBT', place: 'Diamante Retro' },
-  { matchup: 'Neon Caps vs Pirates', date: '18 Feb · 21:00 HBT', place: 'Neón Central Arena' }
 ];
 
 const battingLeaders = [
@@ -356,7 +344,6 @@ const battingTable = [
 
 const navItems = [
   { to: '/', label: 'Inicio' },
-  { to: '/calendar', label: 'Calendario' },
   { to: '/stats', label: 'Estadísticas' },
   { to: '/seasons', label: 'Temporadas' },
   { to: '/faq', label: 'FAQ' },
@@ -395,7 +382,6 @@ const Shell = () => {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/': 'Inicio',
-      '/calendar': 'Calendario',
       '/stats': 'Estadísticas',
       '/seasons': 'Temporadas',
       '/faq': 'FAQ',
@@ -515,12 +501,12 @@ const HomePage = () => (
         </div>
       </div>
       <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
-        <Link
-          to="/calendar"
+        <a
+          href="https://discord.com"
           className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-habboOrange text-[#1f1d2b] font-semibold shadow-pixel animate-pulseGlow relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
         >
-          Ver calendario
-        </Link>
+          Unirse al Discord
+        </a>
         <Link
           to="/stats"
           className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-white/20 text-white font-semibold hover:bg-white/10 hover:border-habboSky/50 hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
@@ -547,18 +533,6 @@ const HomePage = () => (
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-habboSky/20 via-habboMint/15 to-transparent border border-white/10 rounded-2xl p-6">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="section-title">Calendario</div>
-        </div>
-        <p className="text-white/80 mb-4">{calendarCTA.subtitle}</p>
-        <div className="flex flex-wrap gap-3">
-          <Link className="px-4 py-3 rounded-lg bg-habboSky text-[#0f1018] font-semibold shadow-pixel" to="/calendar">
-            {calendarCTA.button}
-          </Link>
-          <span className="text-sm text-white/70">Actualizamos fechas cada domingo.</span>
-        </div>
-      </div>
     </div>
   </section>
 );
@@ -723,33 +697,6 @@ const TeamsPage = () => (
   </section>
 );
 
-const CalendarPage = () => (
-  <section className="space-y-5 sm:space-y-6">
-    <div className="bg-gradient-to-br from-habboSky/25 via-habboMint/20 to-transparent border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6">
-      <div className="section-title mb-3 sm:mb-4 text-lg sm:text-2xl">Calendario oficial</div>
-      <p className="text-white/80 mb-2 sm:mb-3 text-sm sm:text-base">{calendarCTA.title}</p>
-      <p className="text-white/70 text-xs sm:text-sm mb-3 sm:mb-4">{calendarCTA.subtitle}</p>
-      <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
-        <a className="px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboSky text-[#0f1018] font-semibold shadow-pixel text-sm sm:text-base whitespace-nowrap text-center sm:text-left" href="https://discord.com">
-          Recibir alertas en Discord
-        </a>
-        <span className="text-xs sm:text-sm text-white/70">Actualizamos fechas cada domingo.</span>
-      </div>
-    </div>
-
-    <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
-      {calendarEvents.map((event) => (
-        <div key={event.matchup} className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 card-glow hover:border-habboSky/30">
-          <p className="text-[10px] sm:text-xs text-white/60 uppercase mb-1 sm:mb-2">Próximo juego</p>
-          <h3 className="font-display text-base sm:text-lg md:text-xl mb-2 sm:mb-3 truncate">{event.matchup}</h3>
-          <p className="text-white/80 text-xs sm:text-sm mb-1">{event.date}</p>
-          <p className="text-white/70 text-xs sm:text-sm">{event.place}</p>
-        </div>
-      ))}
-    </div>
-  </section>
-);
-
 const RulesPage = () => (
   <section className="space-y-5 sm:space-y-6">
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow">
@@ -840,15 +787,6 @@ function App() {
             <>
               <PageHeader title="Inicio" subtitle="Noticias y bienvenida a la liga roleplay de baseball en Habbo." />
               <HomePage />
-            </>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <>
-              <PageHeader title="Calendario" subtitle="Próximos juegos y alertas. Actualizamos cada domingo." />
-              <CalendarPage />
             </>
           }
         />

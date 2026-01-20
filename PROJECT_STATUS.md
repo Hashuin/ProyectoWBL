@@ -6,7 +6,7 @@
 
 ### ✅ COMPLETADO
 - [x] Proyecto Vite + React + TypeScript + Tailwind
-- [x] 8 páginas con rutas completas (SPA)
+- [x] 7 páginas con rutas completas (SPA)
 - [x] Diseño Habbo con paleta de colores personalizada
 - [x] **Completamente RESPONSIVE** (mobile-first)
   - Mobile: < 640px (hamburger menu)
@@ -62,13 +62,12 @@
 | # | Página | Ruta | Componentes | Estado |
 |---|--------|------|------------|--------|
 | 1 | **Inicio** | `/` | Noticias, Hero, CTA | ✅ Responsive |
-| 2 | **Calendario** | `/calendar` | Próximos juegos, Alerts | ✅ Responsive |
-| 3 | **Estadísticas** | `/stats` | Líderes MLB, Tabla, Campeón | ✅ Responsive |
-| 4 | **Temporadas** | `/seasons` | Info de seasons | ✅ Responsive |
-| 5 | **FAQ** | `/faq` | Preguntas frecuentes | ✅ Responsive |
-| 6 | **Equipos** | `/teams` | Fichas de equipos | ✅ Responsive |
-| 7 | **Reglas** | `/rules` | Reglamento oficial | ✅ Responsive |
-| 8 | **Créditos** | `/credits` | Fundadores | ✅ Responsive |
+| 2 | **Estadísticas** | `/stats` | Líderes MLB, Tabla, Campeón | ✅ Responsive |
+| 3 | **Temporadas** | `/seasons` | Info de seasons | ✅ Responsive |
+| 4 | **FAQ** | `/faq` | Preguntas frecuentes | ✅ Responsive |
+| 5 | **Equipos** | `/teams` | Fichas de equipos | ✅ Responsive |
+| 6 | **Reglas** | `/rules` | Reglamento oficial | ✅ Responsive |
+| 7 | **Créditos** | `/credits` | Fundadores | ✅ Responsive |
 
 ---
 
@@ -91,9 +90,9 @@ habboBrick: #f05d5e      /* Rojo ladrillo */
 ✅ Build Status: SUCCESS
 
 Archivos generados:
-├── dist/index.html                (0.85 kB / gzip: 0.47 kB)
-├── dist/assets/index-C-j_8caX.css (23.51 kB / gzip: 4.98 kB) 
-└── dist/assets/index-DgbjT0VR.js  (194.89 kB / gzip: 61.10 kB)
+├── dist/index.html                 (0.85 kB / gzip: 0.47 kB)
+├── dist/assets/index-2ZdHacTX.css  (22.61 kB / gzip: 4.92 kB) 
+└── dist/assets/index-DLxUZUrb.js  (192.05 kB / gzip: 60.65 kB)
 
 Build time: ~1.4 segundos
 Modules: 31 transformed
@@ -150,7 +149,6 @@ Todos los datos en `src/App.tsx` como arrays estáticos:
 const news = [...]           // Artículos de inicio
 const teams = [...]          // 4 equipos principales
 const seasons = [...]        // Info de temporadas
-const calendarEvents = [...]  // Próximos juegos
 const faqs = [...]           // Preguntas frecuentes
 const rules = [...]          // Reglamento
 const founders = [...]       // Créditos

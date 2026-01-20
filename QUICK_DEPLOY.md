@@ -79,7 +79,6 @@ Tu sitio incluye:
 | Página | URL |
 |--------|-----|
 | Inicio | `/` |
-| Calendario | `/calendar` |
 | Estadísticas | `/stats` |
 | Equipos | `/teams` |
 | Temporadas | `/seasons` |

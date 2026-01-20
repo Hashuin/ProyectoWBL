@@ -88,11 +88,11 @@ const faqs = [
 ];
 
 const founders = [
-  { name: 'Lucas', role: 'Fundador', bio: 'Visionario y líder del proyecto WBL.', size: 'normal' },
-  { name: 'Kush', role: 'Director de Tecnología', bio: 'Encargado del desarrollo técnico y coordinación general del proyecto.', size: 'normal' },
-  { name: 'Jonatito (Pepe)', role: 'Desarrollador de Aplicaciones', bio: 'Desarrolla herramientas y aplicaciones para la gestión de la liga.', size: 'normal' },
-  { name: 'Wya', role: 'Inversionista', bio: 'Brinda el respaldo financiero para hacer realidad la liga.', size: 'normal' },
-  { name: 'Flash', role: 'Diseñador', bio: 'Responsable de la identidad visual y estética del proyecto.', size: 'normal' },
+  { name: 'Lucas', role: 'Fundador', bio: 'Visionario y líder del proyecto WBL.', size: 'normal', image: '/avatars/lucas.png' },
+  { name: 'Kush', role: 'Director de Tecnología', bio: 'Encargado del desarrollo técnico y coordinación general del proyecto.', size: 'normal', image: '/avatars/kush.png' },
+  { name: 'Jonatito (Pepe)', role: 'Desarrollador de Aplicaciones', bio: 'Desarrolla herramientas y aplicaciones para la gestión de la liga.', size: 'normal', image: '/avatars/pepe.png' },
+  { name: 'Wya', role: 'Inversionista', bio: 'Brinda el respaldo financiero para hacer realidad la liga.', size: 'normal', image: '/avatars/wya.png' },
+  { name: 'Flash', role: 'Diseñador', bio: 'Responsable de la identidad visual y estética del proyecto.', size: 'normal', image: '/avatars/flash.png' },
   { name: 'Skyripa', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' },
   { name: 'Alucard', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' }
 ];
@@ -739,9 +739,13 @@ const FoundersPage = () => (
       {founders.filter(f => f.size === 'normal').map((founder) => (
         <div key={founder.name} className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow hover:border-habboGold/40 hover:bg-white/8 transition-all hover:scale-[1.02]">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-            <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 grid place-items-center hover:scale-110 transition-transform flex-shrink-0">
-              <span className="text-lg sm:text-xl md:text-2xl font-black text-habboGold">{founder.name.slice(0, 1)}</span>
-            </div>
+            {founder.image ? (
+              <img src={founder.image} alt={founder.name} className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full object-cover border-2 border-habboGold/40 flex-shrink-0 hover:scale-110 transition-transform" />
+            ) : (
+              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 grid place-items-center hover:scale-110 transition-transform flex-shrink-0">
+                <span className="text-lg sm:text-xl md:text-2xl font-black text-habboGold">{founder.name.slice(0, 1)}</span>
+              </div>
+            )}
             <div className="min-w-0">
               <h3 className="font-display text-base sm:text-lg md:text-xl truncate">{founder.name}</h3>
               <p className="text-[10px] sm:text-xs text-white/60 uppercase truncate">{founder.role}</p>

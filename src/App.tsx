@@ -400,7 +400,9 @@ const Shell = () => {
       <header className="sticky top-0 z-20 backdrop-blur bg-[#0f1018]/85 border-b border-white/5">
         <div className="mx-auto max-w-6xl px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="pixel-border bg-habboOrange px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-pixel text-[#1f1d2b] uppercase hover:bg-habboGold hover:scale-110 transition-all cursor-default">WBL</div>
+            <Link to="/" className="hover:scale-110 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]">
+              <img src="/LogoWBL.png" alt="WBL Logo" className="h-14 sm:h-16 md:h-20 w-auto drop-shadow-[0_0_12px_rgba(255,156,51,0.6)]" />
+            </Link>
             <div className="leading-tight">
               <p className="font-display text-sm sm:text-lg">Liga de Baseball · Habbo</p>
               <p className="text-xs text-white/70">Temporada 1 · Universo Pixel</p>

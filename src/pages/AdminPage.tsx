@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect, ChangeEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, addDoc, query, orderBy, limit, getDocs, Timestamp, deleteDoc, doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
@@ -43,7 +43,6 @@ interface LeaderCardData {
   label: string;
   stat: string;
   leader: string;
-  leaderImageUrl?: string;
   position: string;
   entries: LeaderEntry[];
 }
@@ -75,14 +74,14 @@ const AdminPage = () => {
     city: '',
     record: '',
     logoUrl: '',
-    hits: 0,
-    runs: 0,
-    hr: 0,
-    so: 0,
-    power: 0,
-    contact: 0,
-    defense: 0,
-    speed: 0,
+    hits: undefined,
+    runs: undefined,
+    hr: undefined,
+    so: undefined,
+    power: undefined,
+    contact: undefined,
+    defense: undefined,
+    speed: undefined,
     lineup: [],
     members: '',
     lineupText: '',
@@ -93,10 +92,10 @@ const AdminPage = () => {
     champion: { name: '', season: '', detail: '' },
     featuredTeamId: '',
     leadersBatting: [
-      { label: 'OPS', stat: '', leader: '', leaderImageUrl: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] }
+      { label: 'OPS', stat: '', leader: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] }
     ],
     leadersPitching: [
-      { label: 'SO', stat: '', leader: '', leaderImageUrl: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] }
+      { label: 'SO', stat: '', leader: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] }
     ]
   });
   const { user, logout } = useAuth();
@@ -176,8 +175,7 @@ const AdminPage = () => {
     const formData = new FormData();
     formData.append('image', file);
     
-    const imgbbKey = import.meta.env.VITE_IMGBB_API_KEY;
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+    const response = await fetch('https://api.imgbb.com/1/upload?key=53d55929203cca2897412059c25399d3', {
       method: 'POST',
       body: formData
     });
@@ -232,18 +230,19 @@ const AdminPage = () => {
     }
   };
 
-  const requestDelete = (newsId?: string, title?: string) => {
+  const requestDelete = (newsId?: string) => {
     if (!newsId) return;
-    setConfirmId(newsId);
-    setConfirmTitle(title || 'esta noticia');
+    setConfirmId(`delete-${newsId}`);
+    setConfirmTitle('');
   };
 
   const confirmDelete = async () => {
     if (!confirmId) return;
     try {
       setLoading(true);
-      await deleteDoc(doc(db, 'news', confirmId));
-      setRecentNews((prev) => prev.filter((item) => item.id !== confirmId));
+      const idToDelete = confirmId.replace(/^delete-/, '');
+      await deleteDoc(doc(db, 'news', idToDelete));
+      setRecentNews((prev) => prev.filter((item) => item.id !== idToDelete));
     } catch (err) {
       console.error('Error al eliminar noticia', err);
       setError('No se pudo eliminar la noticia.');
@@ -265,14 +264,14 @@ const AdminPage = () => {
       city: '',
       record: '',
       logoUrl: '',
-      hits: 0,
-      runs: 0,
-      hr: 0,
-      so: 0,
-      power: 0,
-      contact: 0,
-      defense: 0,
-      speed: 0,
+      hits: undefined,
+      runs: undefined,
+      hr: undefined,
+      so: undefined,
+      power: undefined,
+      contact: undefined,
+      defense: undefined,
+      speed: undefined,
       lineup: [],
       members: '',
       lineupText: '',
@@ -294,14 +293,14 @@ const AdminPage = () => {
         city: teamForm.city,
         record: teamForm.record,
         logoUrl: teamForm.logoUrl,
-        hits: Number(teamForm.hits) || 0,
-        runs: Number(teamForm.runs) || 0,
-        hr: Number(teamForm.hr) || 0,
-        so: Number(teamForm.so) || 0,
-        power: Number(teamForm.power) || 0,
-        contact: Number(teamForm.contact) || 0,
-        defense: Number(teamForm.defense) || 0,
-        speed: Number(teamForm.speed) || 0,
+        hits: teamForm.hits ? Number(teamForm.hits) : undefined,
+        runs: teamForm.runs ? Number(teamForm.runs) : undefined,
+        hr: teamForm.hr ? Number(teamForm.hr) : undefined,
+        so: teamForm.so ? Number(teamForm.so) : undefined,
+        power: teamForm.power ? Number(teamForm.power) : undefined,
+        contact: teamForm.contact ? Number(teamForm.contact) : undefined,
+        defense: teamForm.defense ? Number(teamForm.defense) : undefined,
+        speed: teamForm.speed ? Number(teamForm.speed) : undefined,
         members: teamForm.members,
         lineup,
         order: teamForm.order || teams.length + 1
@@ -433,25 +432,6 @@ const AdminPage = () => {
     });
   };
 
-  const handleLeaderImageUpload = async (e: ChangeEvent<HTMLInputElement>, type: 'leadersBatting' | 'leadersPitching', cardIdx: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const url = await uploadImage(file);
-      setStatsForm((prev) => {
-        const draft = JSON.parse(JSON.stringify(prev)) as StatsDoc;
-        draft[type][cardIdx].leaderImageUrl = url;
-        return draft;
-      });
-    } catch (err: any) {
-      setError(err.message || 'Error subiendo imagen');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const removeLeaderEntry = (type: 'leadersBatting' | 'leadersPitching', cardIdx: number, entryIdx: number) => {
     setStatsForm((prev) => {
       const draft = JSON.parse(JSON.stringify(prev)) as StatsDoc;
@@ -465,7 +445,7 @@ const AdminPage = () => {
   const addLeaderCard = (type: 'leadersBatting' | 'leadersPitching') => {
     setStatsForm((prev) => {
       const draft = JSON.parse(JSON.stringify(prev)) as StatsDoc;
-      draft[type].push({ label: '', stat: '', leader: '', leaderImageUrl: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] });
+      draft[type].push({ label: '', stat: '', leader: '', position: '', entries: [{ name: '', value: '', imageUrl: '' }] });
       return draft;
     });
   };
@@ -640,7 +620,7 @@ const AdminPage = () => {
                     <p className="text-white/60 text-sm">No hay noticias publicadas aún.</p>
                   ) : (
                     recentNews.map((item, idx) => (
-                      <div key={idx} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                      <div key={idx} className="p-3 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/8 transition-colors" onClick={() => setConfirmId(item.id || null)}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs text-habboOrange font-semibold">{item.tag}</span>
                           <span className="text-xs text-white/60">{item.date}</span>
@@ -655,10 +635,14 @@ const AdminPage = () => {
                           </div>
                         )}
                         <h3 className="font-semibold text-sm mb-1 line-clamp-2">{item.title}</h3>
-                        <p className="text-xs text-white/75 line-clamp-2">{item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body}</p>
-                        <div className="flex justify-end mt-2">
+                        <p className="text-xs text-white/75 line-clamp-3">{item.body}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-[10px] text-white/50 hover:text-white/70">Haz click para leer más</span>
                           <button
-                            onClick={() => requestDelete(item.id, item.title)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              requestDelete(item.id);
+                            }}
                             className="text-xs px-3 py-1 rounded-lg bg-habboBrick/70 text-white hover:bg-habboBrick transition-colors"
                           >
                             Eliminar
@@ -719,8 +703,8 @@ const AdminPage = () => {
                       </div>
                       <div>
                         <label className="block text-sm text-white/80 mb-1">Lineup (separa con coma, orden de bateo)</label>
-                        <textarea className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white" rows={2} value={teamForm.lineupText} onChange={(e) => setTeamForm({ ...teamForm, lineupText: e.target.value })} placeholder="Flash (P), Lucas (1B), JJ (SS), Kush (DH)" />
-                        <p className="text-[11px] text-white/60 mt-1">Ejemplo: Flash (P), Lucas (1B), JJ (SS), Kush (DH). Incluye posición entre paréntesis.</p>
+                        <textarea className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white" rows={2} value={teamForm.lineupText} onChange={(e) => setTeamForm({ ...teamForm, lineupText: e.target.value })} placeholder="Jugador1, Jugador2, Jugador3" />
+                        <p className="text-[11px] text-white/60 mt-1">Ejemplo: Kush, Lucas, Flash, JJ.</p>
                       </div>
                       <div>
                         <label className="block text-sm text-white/80 mb-1">Integrantes (texto libre)</label>
@@ -876,21 +860,6 @@ const AdminPage = () => {
                               <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="Nombre" value={card.leader} onChange={(e) => handleLeaderChange('leadersBatting', idx, 'leader', e.target.value)} />
                             </div>
                             <div className="space-y-1">
-                              <label className="block text-xs text-white/70">Icono del líder (opcional)</label>
-                              <div className="flex items-center gap-3">
-                                <label className="cursor-pointer">
-                                  <input type="file" accept="image/*" onChange={(e) => handleLeaderImageUpload(e, 'leadersBatting', idx)} className="hidden" />
-                                  <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
-                                </label>
-                                {card.leaderImageUrl && (
-                                  <div className="flex items-center gap-2">
-                                    <img src={card.leaderImageUrl} alt="líder" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                    <span className="text-xs text-white/60">✓ Cargado</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="space-y-1">
                               <label className="block text-xs text-white/70">Posición / Equipo</label>
                               <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="SS - Falcons" value={card.position} onChange={(e) => handleLeaderChange('leadersBatting', idx, 'position', e.target.value)} />
                             </div>
@@ -969,21 +938,6 @@ const AdminPage = () => {
                             <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="Nombre" value={card.leader} onChange={(e) => handleLeaderChange('leadersPitching', idx, 'leader', e.target.value)} />
                           </div>
                           <div className="space-y-1">
-                            <label className="block text-xs text-white/70">Icono del líder (opcional)</label>
-                            <div className="flex items-center gap-3">
-                              <label className="cursor-pointer">
-                                <input type="file" accept="image/*" onChange={(e) => handleLeaderImageUpload(e, 'leadersPitching', idx)} className="hidden" />
-                                <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
-                              </label>
-                              {card.leaderImageUrl && (
-                                <div className="flex items-center gap-2">
-                                  <img src={card.leaderImageUrl} alt="líder" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                  <span className="text-xs text-white/60">✓ Cargado</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="space-y-1">
                             <label className="block text-xs text-white/70">Posición / Equipo</label>
                             <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="P - Raptors" value={card.position} onChange={(e) => handleLeaderChange('leadersPitching', idx, 'position', e.target.value)} />
                           </div>
@@ -1052,7 +1006,7 @@ const AdminPage = () => {
         </div>
       </div>
 
-      {confirmId && (
+      {confirmId && confirmId.startsWith('delete-') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm" onClick={() => setConfirmId(null)}>
           <div
             className="bg-[#0f1018] border border-white/10 rounded-xl p-6 max-w-sm w-full card-glow"
@@ -1078,6 +1032,46 @@ const AdminPage = () => {
           </div>
         </div>
       )}
+
+      {confirmId && !confirmId.startsWith('delete-') && recentNews.find(n => n.id === confirmId) && (() => {
+        const item = recentNews.find(n => n.id === confirmId);
+        return item ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm" onClick={() => setConfirmId(null)}>
+            <div
+              className="bg-[#0f1018] border border-white/10 rounded-xl p-6 max-w-lg w-full max-h-[80vh] flex flex-col card-glow"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs text-habboOrange font-semibold">{item.tag}</span>
+                  <span className="text-xs text-white/60">{item.date}</span>
+                </div>
+                {item.imageUrl && (
+                  <div className="relative w-full overflow-hidden rounded-lg border border-white/5 mb-3" style={{ paddingTop: '56%' }}>
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <h2 className="font-semibold text-lg mb-3">{item.title}</h2>
+              </div>
+              <div className="overflow-y-auto flex-1 mb-3 pr-2">
+                <p className="text-sm text-white/75 whitespace-pre-wrap">{item.body}</p>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  onClick={() => setConfirmId(null)}
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null;
+      })()}
     </>
   );
 };

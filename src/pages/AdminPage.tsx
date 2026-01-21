@@ -288,26 +288,28 @@ const AdminPage = () => {
 
     try {
       const lineup = teamForm.lineupText.split(',').map((p) => p.trim()).filter(Boolean);
-      const payload: TeamDoc = {
+      const payload: any = {
         name: teamForm.name,
         city: teamForm.city,
         record: teamForm.record,
         logoUrl: teamForm.logoUrl,
-        hits: teamForm.hits ? Number(teamForm.hits) : undefined,
-        runs: teamForm.runs ? Number(teamForm.runs) : undefined,
-        hr: teamForm.hr ? Number(teamForm.hr) : undefined,
-        so: teamForm.so ? Number(teamForm.so) : undefined,
-        power: teamForm.power ? Number(teamForm.power) : undefined,
-        contact: teamForm.contact ? Number(teamForm.contact) : undefined,
-        defense: teamForm.defense ? Number(teamForm.defense) : undefined,
-        speed: teamForm.speed ? Number(teamForm.speed) : undefined,
         members: teamForm.members,
         lineup,
         order: teamForm.order || teams.length + 1
       };
 
+      // Solo incluir campos numéricos si tienen valor
+      if (teamForm.hits) payload.hits = Number(teamForm.hits);
+      if (teamForm.runs) payload.runs = Number(teamForm.runs);
+      if (teamForm.hr) payload.hr = Number(teamForm.hr);
+      if (teamForm.so) payload.so = Number(teamForm.so);
+      if (teamForm.power) payload.power = Number(teamForm.power);
+      if (teamForm.contact) payload.contact = Number(teamForm.contact);
+      if (teamForm.defense) payload.defense = Number(teamForm.defense);
+      if (teamForm.speed) payload.speed = Number(teamForm.speed);
+
       if (editingTeamId) {
-        await updateDoc(doc(db, 'teams', editingTeamId), payload as any);
+        await updateDoc(doc(db, 'teams', editingTeamId), payload);
         setSuccess('Equipo actualizado.');
       } else {
         await addDoc(collection(db, 'teams'), payload);

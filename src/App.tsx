@@ -99,16 +99,36 @@ const founders = [
 
 const rules = [
   {
-    title: 'Reglas de juego',
-    description: 'Las reglas oficiales de la WBL serán publicadas próximamente. Incluirán mecánicas de bateo, pitcheo, fildeo y orden de turnos.'
+    title: 'INTRODUCCIÓN - COMANDOS',
+    description: '• Pitcher: cutter - slider - fast - curve - knuckle - fake - reset\n↳ reset: devuelve la bola al punto de lanzamiento\n• Fildeo: b1 - b2 - b3 - h4 (o b4)\n• Bate: swing - toque\n↳ swing: la pelota es enviada al jardín, donde juega el primera base y el shortstop. [!] Posibilidad de homerun o foul\n↳ toque: se envia la pelota dentro del juego de pitcher. [!] Sin probabilidad de homerun o foul.'
   },
   {
-    title: 'Código de conducta',
-    description: 'Todos los jugadores deben mantener respeto hacia compañeros, árbitros y staff. Fair play ante todo.'
+    title: '1.00 - JUEGO',
+    description: '1.01 - El equipo que sea seleccionado como LOCAL será quien cierre el juego\n1.02 - Los partidos tendrán fechas limites para jugarse, si uno de los equipos no muestra esfuerzo con acordar una fecha, se le dará la victoria por default (1-0) al rival.\n1.02b - PODRÁ extenderse la fecha en caso de que ambos equipos no puedan acordar. La administración podrá poner una fecha concreta o darlo como no presentado (0-0)\n1.03 - Cada equipo dispondrá de 3 tiempos muertos. El mánager es quien tiene el derecho de pedir tiempo (TIME), pedir revisión de X jugada o de realizar una denuncia en el canal de ticket\n1.04 - Si un partido llega a un marcador de 7-0 se lo tomará como knockout y se terminará el partido\n1.05 - Si ningún equipo se presenta a la hora que acordaron no se modificará el horario y se tomará como NO PRESENTADO (0-0)\n1.06 - Se esperará como máximo 15 minutos si a la hora acordada falta el mínimo de jugadores para iniciar el partido (4 por equipo). No se podrán utilizar los tiempos muertos si no cumplen con el mínimo de jugadores. En caso de no contar con los 4 necesarios se dará default (1-0)\n1.07 - Un equipo no podrá continuar el partido y será puesto el marcador 1-0 (o quedar como estaba si iban ganando) si no cuenta con sus cuatro bateadores OBLIGATORIOS, dando la victoria al equipo que sí tiene su equipo completo\n1.08 - En caso de que el mánager no se presente al partido, este deberá seleccionar a uno de sus jugadores para que tomen su lugar temporalmente. En caso de que no avise, el umpire se encargará de seleccionarlo\n1.09 - En caso de coincidir colores en el uniforme, el equipo local será el que decida qué uniforme usar.\n1.10 - Cada juego constará de 5 innings con posibilidad de ir a extras.'
   },
   {
-    title: 'Formato de temporada',
-    description: 'Temporada regular de 24 juegos por equipo, seguida de playoffs al mejor de 7 series. Detalles en Discord.'
+    title: '2.00 - EQUIPOS',
+    description: '2.01 - Los equipos deben ser de 4 hasta 6 jugadores como máximo. Se debe elegir un mánager del equipo (que también puede ser jugador a la vez)\n2.01b - En caso de tener un mánager NO JUGADOR no contará en la alineación (podrán ser 6 + el mánager, por ejemplo)\n2.02 - Los equipos deben tener dos uniformes con distintos colores por si coinciden con el color del uniforme rival.\n2.03 - Los jugadores solo pueden estar registrados en un único equipo durante la temporada.\n2.04 - Los cambios en el roster solo podrán realizarse antes del inicio de la temporada y en fechas o permisos habilitados por la administración'
+  },
+  {
+    title: '3.00 - PARTIDOS',
+    description: '3.01 - Los partidos se jugarán con 4 jugadores en campo por equipo como mínimo.\n3.02 - El orden del bateo debe mantenerse en todo el partido, salvo por expulsión o abandono.\n3.02b - El orden debe ser notificado al umpire únicamente por el mánager antes de iniciar el partido.\n3.03 - No se permitirá el ingreso de jugadores externos una vez iniciado el partido. Unicamente podrán estar los dos equipos, el umpire y personal de la administración.\n3.04 - El umpire es la MÁXIMA AUTORIDAD durante el partido y sus decisiones son las que se deben seguir. La administración podrá poner excepciones a esta regla únicamente con clara justificación.\n3.04b - Ante cualquier comportamiento que el umpire considere indebido podrá expulsar y advertir a un jugador según lo vea necesario.\n3.05 - Cualquier invasión de campo no deseada sea por jugadores o no, no será tolerada. Interferir en un partido podrá resultar en expulsión según vea el umpire.'
+  },
+  {
+    title: '4.00 - BATEADOR',
+    description: '4.01 - El bateador deberá pararse en alguno de los felpudos rojos para indicar que está listo para batear.\n4.01b - Una vez dado el ATT del pitcher no podrá bajarse del felpudo o será considerado un strike.\n4.02 - Cuando un bateador llega a los 3 strikes quedará out.\n4.02b - Un bateador no puede llegar al tercer strike por foul.\n4.03 - Queda prohibido el uso de macros, copiar y pegar, y el uso de la flecha para arriba para ahorrar escribir swing o toque.\n4.04 - Al acumular 4 bolas (por el pitcher) se le otorgará base por bola. Si habían corredores en alguna base asegurada deberá avanzar únicamente si estaba obligado a correr.\n4.05 - Si se intenta batear una fake será contado como strike. Se tomará como intento de bateo si se baja del felpudo o envía algun comando para batear.\n4.06 - En caso de no haber podido batear la pelota, el bateador deberá despejar la casilla home (salir de encima) para no molestar al pitcher.\n4.07 - Si se logra batear y la pelota cae encima de donde está parado uno de los que fildean (sea 1B, SS o pitcher) será tomado como flyout. Este sistema está automatizado con wired, así que el bot dará aviso.'
+  },
+  {
+    title: '5.00 - CORREDOR',
+    description: '5.01 - El bateador que logre batear la bola deberá correr obligatoriamente a primera base y se convertirá en un corredor.\n5.02 - Si la base es pisada el corredor no podrá continuar hacia las otras bases y se contará como base asegurada.\n5.02b - Para robar una base debe esquivarse diagonalmente y seguir corriendo hacia la próxima.\n5.02c - Si el corredor intenta recortar una base para robarla pero es interferido por alguien del equipo rival, podrá recortar la base esquivando al jugador que le está tapando el cuadro.\n5.03 - En caso de que un corredor obligado a correr se quede quieto en una base y su compañero vaya hacia su base, será DOBLE OUT.\n5.03b - En caso de que un corredor NO obligado a correr se quede quieto y venga su compañero, será OUT para el compañero que fue hacia su base. No se puede robar una base que aseguró un compañero.\n5.04 - Un corredor solo puede ir hacia la siguiente base cuando la bola llega a la casilla home. En caso de adelantarse será considerado OUT.\n5.05 - En caso de que se marque un homerun se deben pisar todas las bases que tengan en frente. Por ejemplo, si estaban en segunda base cuando metieron el homerun, deberán pisar obligatoriamente la tercera base y home.\n5.06 - Un corredor podrá regresarse a su base segura únicamente si no pasó la mitad del recorrido para llegar a la siguiente base (4 casillas para adelante como máximo)\n5.07 - Si el equipo que está fildeando interfiere en la llegada a una base será considerada como base asegurada. Si el corredor tenía intenciones de robar base, se debe seguir la regla 5.02c\n5.07b - Si un corredor es interferido de asegurar base y detrás venía un compañero que robó base y va hacia la de este corredor, será OUT para el corredor al que le taparon el cuadro, ya que su compañero está queriendo ir a la misma base se vuelve culpa del compañero por no devolverse.'
+  },
+  {
+    title: '6.00 - PITCHER',
+    description: '6.01 - El pitcher deberá decir "ATT" antes de hacer cualquier lanzamiento. Este solo puede ser dicho luego del playball del umpire y cuando el bateador está en alguno de los felpudos rojos. No será contada cualquier variante a esta, sea ATENTO o cualquier "ATT" mal escrito.\n6.01b - El pitcher deberá repetir el ATT si cometió bola (bola1, bola2...)\n6.02 - En caso de escribir mal el lanzamiento luego del "ATT" será contado como bola. Por ejemplo, el pitcher dice ATT y luego escribe fsat en lugar de fast.\n6.02b - Luego del ATT el pitcher no podrá no lanzar, en caso de bajarse de su lugar sin haber lanzado también será contado como bola. Tampoco podrá enviar algún otro mensaje que no sea un lanzamiento (pero sí luego de haber lanzado)\n6.03 - El pitcher tendrá 8 segundos luego del ATT para hacer algún lanzamiento o será bola.\n6.04 - Solo podrá utilizar una fake por turno de bateador. En caso de fallar el intento de lanzar una fake será bola.\n6.04b - Como la knuckle también puede fallar debido a su complejidad será bola en caso de hacerlo.\n6.05 - Luego de hacer algún lanzamiento el pitcher puede ir a buscar la bola a HOME para intentar dejar out a los corredores que se movieron de su base.'
+  },
+  {
+    title: '7.00 - MERCADO',
+    description: '7.01 - El mercado estará abierto antes de iniciar la temporada y no volverá a ser abierto hasta los playoff.\n7.02 - Aquellos equipos eliminados pueden ofrecer a sus jugadores para que estén de refuerzo en otro equipo. El equipo que clasificó de primero será el primero en escoger qué refuerzo tomar.\n7.02b - Si un equipo quiere tomar de refuerzo a otro no debe tener el cupo lleno. En caso de ya ser 6 jugadores en su equipo, el manager tendrá la libertad de sacar jugadores.'
   }
 ];
 
@@ -471,7 +491,9 @@ const Shell = () => {
             <p className="text-white/60 text-xs sm:text-sm">© 2026 WBL. Todos los derechos reservados. Proyecto de rol, no oficial.</p>
           </div>
           <a
-            href="https://discord.com"
+            href="https://discord.gg/9ufJQpkq4S"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-lg bg-habboSky text-[#0f1018] font-semibold shadow-pixel relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0c12]"
           >
             Únete al Discord
@@ -508,7 +530,9 @@ const HomePage = () => (
       </div>
       <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
         <a
-          href="https://discord.com"
+          href="https://discord.gg/9ufJQpkq4S"
+          target="_blank"
+          rel="noopener noreferrer"
           className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-habboOrange text-[#1f1d2b] font-semibold shadow-pixel animate-pulseGlow relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
         >
           Unirse al Discord
@@ -725,7 +749,7 @@ const RulesPage = () => (
       <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
         El reglamento completo será publicado próximamente en el Discord oficial. Incluirá mecánicas detalladas, sistema de arbitraje y sanciones.
       </p>
-      <a className="inline-flex px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboOrange text-[#0f1018] font-semibold shadow-pixel relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018] text-xs sm:text-sm whitespace-nowrap" href="https://discord.com">
+      <a className="inline-flex px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboOrange text-[#0f1018] font-semibold shadow-pixel relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018] text-xs sm:text-sm whitespace-nowrap" href="https://discord.gg/9ufJQpkq4S" target="_blank" rel="noopener noreferrer">
         Consultar en Discord
       </a>
     </div>
@@ -775,7 +799,7 @@ const FoundersPage = () => (
       <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
         Gracias a todo el equipo, la WBL sigue creciendo temporada tras temporada. Únete a la comunidad y forma parte de esta historia.
       </p>
-      <a className="inline-flex px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboSky text-[#0f1018] font-semibold shadow-pixel hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018] text-xs sm:text-sm whitespace-nowrap" href="https://discord.com">
+      <a className="inline-flex px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboSky text-[#0f1018] font-semibold shadow-pixel hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018] text-xs sm:text-sm whitespace-nowrap" href="https://discord.gg/9ufJQpkq4S" target="_blank" rel="noopener noreferrer">
         Únete al Discord
       </a>
     </div>

@@ -1,0 +1,5 @@
+# Carpeta para imágenes de noticias
+
+Sube aquí las imágenes que quieras usar en las noticias.
+
+Ejemplo: si subes `partido-final.jpg`, usa en el admin: `/news/partido-final.jpg`

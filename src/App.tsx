@@ -1,7 +1,65 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, lazy, Suspense } from 'react';
 import { Link, Route, Routes, Outlet, useLocation } from 'react-router-dom';
+import { collection, query, orderBy, limit, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
-const news = [
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+
+interface NewsItem {
+  title: string;
+  body: string;
+  tag: string;
+  date: string;
+  imageUrl?: string;
+  id?: string;
+}
+
+interface TeamDoc {
+  id?: string;
+  name: string;
+  city: string;
+  stadium?: string;
+  record: string;
+  logoUrl?: string;
+  hits?: number;
+  runs?: number;
+  hr?: number;
+  so?: number;
+  power?: number;
+  contact?: number;
+  defense?: number;
+  speed?: number;
+  lineup: string[];
+  order?: number;
+  members?: string;
+}
+
+interface LeaderEntry {
+  name: string;
+  value: string;
+  imageUrl?: string;
+}
+
+interface LeaderCardData {
+  label: string;
+  stat: string;
+  leader: string;
+  leaderImageUrl?: string;
+  position: string;
+  entries: LeaderEntry[];
+}
+
+interface StatsDoc {
+  champion: { name: string; season: string; detail: string };
+  featuredTeamId?: string;
+  leadersBatting: LeaderCardData[];
+  leadersPitching: LeaderCardData[];
+}
+
+const defaultNews: NewsItem[] = [
   {
     title: 'Temporada 5 arranca el 12 de febrero',
     body: 'Nuevas reglas de pitcheo, uniformes retro y modo espectador mejorado en Habbo.',
@@ -24,14 +82,16 @@ const news = [
 
 const teams = [
   {
-    name: 'Habbo Meteors',
-    city: 'Ciudad Pixel',
+    name: 'Tohoku Rakuten Golden Eagles',
+    city: 'Senday · Japón Pixel',
     record: '18-6',
-    power: 92,
-    contact: 87,
-    defense: 90,
-    speed: 84,
-    lineup: ['Kiro (P)', 'Luna (SS)', 'Dex (1B)', 'Mika (CF)', 'Rho (C)']
+    logo: '/logos/logoRakuten.png',
+    hits: 1247,
+    runs: 562,
+    hr: 89,
+    so: 412,
+    members: 'Kush, Lucas, Flash, JJ, xzxxzc',
+    lineup: ['Flash (P)', 'Lucas (1B)', 'JJ (SS)', 'Kush (1B)', 'xzxxzc (SS)']
   },
   {
     name: 'Neon Caps',
@@ -41,7 +101,7 @@ const teams = [
     contact: 90,
     defense: 86,
     speed: 88,
-    lineup: ['Taro (P)', 'Eli (SS)', 'Nova (RF)', 'Seth (2B)', 'Mori (C)']
+    lineup: ['Taro (P)', 'Eli (SS)', 'Nova (RF)', 'Seth (2B)', 'Mori (1B)']
   },
   {
     name: 'Pixel Pirates',
@@ -51,7 +111,7 @@ const teams = [
     contact: 82,
     defense: 80,
     speed: 86,
-    lineup: ['Ray (P)', 'Cora (LF)', 'Zed (3B)', 'Ivy (CF)', 'Tess (C)']
+    lineup: ['Ray (P)', 'Cora (LF)', 'Zed (3B)', 'Ivy (SS)', 'Tess (1B)']
   },
   {
     name: 'Retro Rockets',
@@ -61,9 +121,15 @@ const teams = [
     contact: 78,
     defense: 81,
     speed: 79,
-    lineup: ['Vox (P)', 'Ari (SS)', 'Neo (1B)', 'Rin (RF)', 'Kai (C)']
+    lineup: ['Vox (P)', 'Ari (SS)', 'Neo (1B)', 'Rin (RF)', 'Kai (1B)']
   }
 ];
+
+const defaultChampion = {
+  name: 'Habbo Meteors',
+  season: 'Season 4 · 2025',
+  detail: 'Serie 4-2 vs Neon Caps'
+};
 
 const seasons = [
   {
@@ -96,6 +162,14 @@ const founders = [
   { name: 'Skyripa', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' },
   { name: 'Alucard', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' }
 ];
+
+const avatarMap: Record<string, string> = {
+  'Lucas': '/avatars/lucas.png',
+  'Kush': '/avatars/kush.png',
+  'Flash': '/avatars/flash.png',
+  'JJ': '/avatars/wya.png',
+  'xzxxzc': '/avatars/pepe.png'
+};
 
 const rules = [
   {
@@ -136,67 +210,67 @@ const battingLeaders = [
   {
     label: 'OPS',
     stat: '.987',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'Flash',
+    position: 'P · #1',
     entries: [
-      { name: 'Jackson Holliday', value: '.889', imageUrl: '' },
-      { name: 'Jordan Westburg', value: '.770', imageUrl: '' },
-      { name: 'Colton Cowser', value: '.732', imageUrl: '' }
+      { name: 'Kush', value: '.889', imageUrl: '/avatars/kush.png' },
+      { name: 'Lucas', value: '.770', imageUrl: '/avatars/lucas.png' },
+      { name: 'xzxxzc', value: '.732', imageUrl: '/avatars/pepe.png' }
     ]
   },
   {
     label: 'Jonrones',
     stat: '31',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'Lucas',
+    position: 'P · #1',
     entries: [
-      { name: 'Jackson Holliday', value: '25', imageUrl: '' },
-      { name: 'Jordan Westburg', value: '21', imageUrl: '' },
-      { name: 'Colton Cowser', value: '19', imageUrl: '' }
+      { name: 'Kush', value: '25', imageUrl: '/avatars/kush.png' },
+      { name: 'Flash', value: '21', imageUrl: '/avatars/flash.png' },
+      { name: 'xzxxzc', value: '19', imageUrl: '/avatars/pepe.png' }
     ]
   },
   {
     label: 'Carreras',
     stat: '92',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'Flash',
+    position: 'P · #1',
     entries: [
-      { name: 'Jackson Holliday', value: '81', imageUrl: '' },
-      { name: 'Adley Rutschman', value: '74', imageUrl: '' },
-      { name: 'Ryan Mountcastle', value: '68', imageUrl: '' }
+      { name: 'Kush', value: '81', imageUrl: '/avatars/kush.png' },
+      { name: 'JJ', value: '74', imageUrl: '/avatars/wya.png' },
+      { name: 'Lucas', value: '68', imageUrl: '/avatars/lucas.png' }
     ]
   },
   {
     label: 'Promedio',
     stat: '.274',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'Flash',
+    position: 'P · #1',
     entries: [
-      { name: 'Jackson Holliday', value: '.262', imageUrl: '' },
-      { name: 'Adley Rutschman', value: '.258', imageUrl: '' },
-      { name: 'Ryan Mountcastle', value: '.253', imageUrl: '' }
+      { name: 'Kush', value: '.262', imageUrl: '/avatars/kush.png' },
+      { name: 'JJ', value: '.258', imageUrl: '/avatars/wya.png' },
+      { name: 'Lucas', value: '.253', imageUrl: '/avatars/lucas.png' }
     ]
   },
   {
     label: 'Impulsadas',
     stat: '88',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'Kush',
+    position: '1B · #2',
     entries: [
-      { name: 'Adley Rutschman', value: '72', imageUrl: '' },
-      { name: 'Ryan Mountcastle', value: '69', imageUrl: '' },
-      { name: 'Jackson Holliday', value: '65', imageUrl: '' }
+      { name: 'JJ', value: '72', imageUrl: '/avatars/wya.png' },
+      { name: 'Lucas', value: '69', imageUrl: '/avatars/lucas.png' },
+      { name: 'xzxxzc', value: '65', imageUrl: '/avatars/pepe.png' }
     ]
   },
   {
     label: 'Hits',
     stat: '158',
-    leader: 'Gunnar Henderson',
-    position: 'SS · #2',
+    leader: 'JJ',
+    position: '1B · #3',
     entries: [
-      { name: 'Jackson Holliday', value: '150', imageUrl: '' },
-      { name: 'Jordan Westburg', value: '134', imageUrl: '' },
-      { name: 'Adley Rutschman', value: '129', imageUrl: '' }
+      { name: 'Flash', value: '150', imageUrl: '/avatars/flash.png' },
+      { name: 'Kush', value: '147', imageUrl: '/avatars/kush.png' },
+      { name: 'Lucas', value: '139', imageUrl: '/avatars/lucas.png' }
     ]
   }
 ];
@@ -227,12 +301,12 @@ const pitchingLeaders = [
   {
     label: 'Ponches',
     stat: '182',
-    leader: 'Dean Kremer',
-    position: 'P · #64',
+    leader: 'Flash',
+    position: 'P · #1',
     entries: [
-      { name: 'Cade Povich', value: '156', imageUrl: '' },
-      { name: 'Trevor Rogers', value: '143', imageUrl: '' },
-      { name: 'Keegan Akin', value: '97', imageUrl: '' }
+      { name: 'Kush', value: '156', imageUrl: '/avatars/kush.png' },
+      { name: 'Lucas', value: '143', imageUrl: '/avatars/lucas.png' },
+      { name: 'xzxxzc', value: '97', imageUrl: '/avatars/pepe.png' }
     ]
   },
   {
@@ -364,11 +438,11 @@ const battingTable = [
 
 const navItems = [
   { to: '/', label: 'Inicio' },
-  { to: '/stats', label: 'Estadísticas' },
-  { to: '/seasons', label: 'Temporadas' },
-  { to: '/faq', label: 'FAQ' },
+  { to: '/seasons', label: 'Temporada' },
   { to: '/teams', label: 'Equipos' },
+  { to: '/stats', label: 'Estadísticas' },
   { to: '/rules', label: 'Reglas' },
+  { to: '/faq', label: 'FAQ' },
   { to: '/founders', label: 'Créditos' }
 ];
 
@@ -504,104 +578,218 @@ const Shell = () => {
   );
 };
 
-const HomePage = () => (
-  <section className="min-h-screen grid gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start relative px-4 sm:px-5 py-8 sm:py-12" style={{backgroundImage: 'url(/fondo.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', backgroundRepeat: 'no-repeat'}}>
-    {/* Overlay difuminado */}
-    <div className="absolute inset-0 bg-gradient-to-b from-[#0f1018]/45 via-[#0f1018]/65 to-[#0f1018]/80 backdrop-blur-sm pointer-events-none"></div>
-    
-    {/* Cards con z-index para estar sobre el fondo */}
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow relative z-10">
-      <div className="section-title mb-4 text-[8px] sm:text-[10px]">Bienvenida</div>
-      <h1 className="font-display text-2xl sm:text-3xl md:text-4xl leading-tight mb-3">
-        Bienvenido a la World Baseball League de Habbo
-      </h1>
-      <p className="text-sm sm:text-base text-white/80 mb-4 sm:mb-6">
-        Liga oficial roleplay con fixtures semanales, mercado de fichajes, transmisión en salas Habbo y stats en vivo. Vive el pixel-ball con estética retro y comunidades activas.
-      </p>
-      <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
-        <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
-          <p className="text-xs sm:text-sm text-white/70 mb-1">Arranque temporada</p>
-          <p className="font-semibold text-base sm:text-lg">12 Feb · 20:00 HBT</p>
-        </div>
-        <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
-          <p className="text-xs sm:text-sm text-white/70 mb-1">Estadio</p>
-          <p className="font-semibold text-base sm:text-lg">Habbo Square · Lobby</p>
-        </div>
-      </div>
-      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
-        <a
-          href="https://discord.gg/9ufJQpkq4S"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-habboOrange text-[#1f1d2b] font-semibold shadow-pixel animate-pulseGlow relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
-        >
-          Unirse al Discord
-        </a>
-        <Link
-          to="/stats"
-          className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-white/20 text-white font-semibold hover:bg-white/10 hover:border-habboSky/50 hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
-        >
-          Ver estadísticas
-        </Link>
-      </div>
-    </div>
+const HomePage = () => {
+  const [news, setNews] = useState<NewsItem[]>(defaultNews);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
-    <div className="space-y-4 relative z-10">
-      <div className="bg-habboInk/80 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow">
-        <div className="section-title mb-4 text-[8px] sm:text-[10px]">Noticias</div>
-        <div className="space-y-3 sm:space-y-4">
-          {news.map((item) => (
-            <article key={item.title} className="p-3 sm:p-4 rounded-xl bg-white/5 border border-white/5 hover:border-habboSky/50 hover:bg-white/8 transition-all hover:scale-[1.02]">
-              <div className="flex items-center justify-between mb-2 text-[10px] sm:text-xs text-white/60 uppercase tracking-wide">
-                <span>{item.tag}</span>
-                <span>{item.date}</span>
+  useEffect(() => {
+    const loadNews = async () => {
+      try {
+        const newsQuery = query(
+          collection(db, 'news'),
+          orderBy('createdAt', 'desc'),
+          limit(10)
+        );
+        const snapshot = await getDocs(newsQuery);
+        const newsData = snapshot.docs.map(doc => doc.data() as NewsItem);
+        
+        if (newsData.length > 0) {
+          setNews(newsData);
+        }
+      } catch (err) {
+        console.error('Error loading news:', err);
+        // Keep default news if Firebase fails
+      } finally {
+        setLoadingNews(false);
+      }
+    };
+
+    loadNews();
+  }, []);
+
+  return (
+    <section className="min-h-screen grid gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start relative px-4 sm:px-5 py-8 sm:py-12" style={{backgroundImage: 'url(/fondo.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', backgroundRepeat: 'no-repeat'}}>
+      {/* Overlay difuminado */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0f1018]/45 via-[#0f1018]/65 to-[#0f1018]/80 backdrop-blur-sm pointer-events-none"></div>
+      
+      {/* Cards con z-index para estar sobre el fondo */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow relative z-10">
+        <div className="section-title mb-4 text-[8px] sm:text-[10px]">Bienvenida</div>
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl leading-tight mb-3">
+          Bienvenido a la World Baseball League de Habbo
+        </h1>
+        <p className="text-sm sm:text-base text-white/80 mb-4 sm:mb-6">
+          Liga oficial roleplay con fixtures semanales, mercado de fichajes, transmisión en salas Habbo y stats en vivo. Vive el pixel-ball con estética retro y comunidades activas.
+        </p>
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+          <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
+            <p className="text-xs sm:text-sm text-white/70 mb-1">Arranque temporada</p>
+            <p className="font-semibold text-base sm:text-lg">12 Feb · 20:00 HBT</p>
+          </div>
+          <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
+            <p className="text-xs sm:text-sm text-white/70 mb-1">Estadio</p>
+            <p className="font-semibold text-base sm:text-lg">Habbo Square · Lobby</p>
+          </div>
+        </div>
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
+          <a
+            href="https://discord.gg/9ufJQpkq4S"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-habboOrange text-[#1f1d2b] font-semibold shadow-pixel animate-pulseGlow relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
+          >
+            Unirse al Discord
+          </a>
+          <Link
+            to="/stats"
+            className="px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-white/20 text-white font-semibold hover:bg-white/10 hover:border-habboSky/50 hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboSky focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018]"
+          >
+            Ver estadísticas
+          </Link>
+        </div>
+      </div>
+
+      <div className="space-y-4 relative z-10">
+        <div className="bg-habboInk/80 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow">
+          <div className="section-title mb-4 text-[8px] sm:text-[10px]">Noticias</div>
+          {loadingNews ? (
+            <div className="text-center py-8">
+              <div className="w-8 h-8 border-4 border-habboOrange border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+          ) : (
+            <div className="space-y-3 sm:space-y-4">
+              {news.map((item, idx) => (
+                <article
+                  key={idx}
+                  onClick={() => {
+                    setSelectedNews(item);
+                    setShowModal(true);
+                  }}
+                  className="cursor-pointer p-3 sm:p-4 rounded-xl bg-white/5 border border-white/5 hover:border-habboSky/50 hover:bg-white/8 transition-all hover:scale-[1.02]"
+                >
+                  <div className="flex items-center justify-between mb-2 text-[10px] sm:text-xs text-white/60 uppercase tracking-wide">
+                    <span>{item.tag}</span>
+                    <span>{item.date}</span>
+                  </div>
+                  {item.imageUrl && (
+                    <div className="relative w-full overflow-hidden rounded-lg border border-white/5 mb-2" style={{ paddingTop: '56%' }}>
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-white/75">{item.body}</p>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {showModal && selectedNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)}>
+          <div
+            className="relative max-w-3xl w-full bg-[#0f1018] border border-white/10 rounded-2xl shadow-2xl card-glow overflow-hidden"
+            style={{ animation: 'zoomInModal 180ms ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 p-2 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+            {selectedNews.imageUrl && (
+              <div className="relative w-full" style={{ paddingTop: '56%' }}>
+                <img
+                  src={selectedNews.imageUrl}
+                  alt={selectedNews.title}
+                  className="absolute inset-0 w-full h-full object-contain bg-black"
+                />
               </div>
-              <h3 className="font-semibold mb-1 text-sm sm:text-base">{item.title}</h3>
-              <p className="text-xs sm:text-sm text-white/75">{item.body}</p>
-            </article>
-          ))}
+            )}
+            <div className="p-5 sm:p-6 space-y-2">
+              <div className="flex items-center justify-between text-[10px] sm:text-xs text-white/60 uppercase tracking-wide">
+                <span>{selectedNews.tag}</span>
+                <span>{selectedNews.date}</span>
+              </div>
+              <h3 className="font-semibold text-lg sm:text-xl">{selectedNews.title}</h3>
+              <p className="text-sm text-white/80 whitespace-pre-wrap">{selectedNews.body}</p>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+    </section>
+  );
+};
 
-    </div>
-  </section>
-);
+const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
+  const [statsData, setStatsData] = useState<StatsDoc | null>(null);
 
-const StatsPage = () => {
-  const featured = useMemo(() => teams[0], []);
-  const champion = useMemo(() => ({
-    name: 'Habbo Meteors',
-    season: 'Season 4 · 2025',
-    detail: 'Serie 4-2 vs Neon Caps'
-  }), []);
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const statsRef = doc(db, 'stats', 'current');
+        const snap = await getDoc(statsRef);
+        if (snap.exists()) {
+          setStatsData(snap.data() as StatsDoc);
+        }
+      } catch (err) {
+        console.error('Error loading stats', err);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  const featured = useMemo(() => {
+    if (statsData?.featuredTeamId) {
+      const found = teamsData.find((t) => t.id === statsData.featuredTeamId);
+      if (found) return found;
+    }
+    return teamsData[0];
+  }, [statsData, teamsData]);
+
+  const champion = statsData?.champion || defaultChampion;
+  const battingData = statsData?.leadersBatting?.length ? statsData.leadersBatting : (battingLeaders as LeaderCardData[]);
+  const pitchingData = statsData?.leadersPitching?.length ? statsData.leadersPitching : (pitchingLeaders as LeaderCardData[]);
+  const orderedLabels = ['Impulsadas', 'Hits', 'Jonrones', 'Carreras', 'Ponches', 'OPS'];
+  const topCards = orderedLabels
+    .map((lbl) => [...battingData, ...pitchingData].find((c) => c.label.toLowerCase() === lbl.toLowerCase()))
+    .filter((c): c is LeaderCardData => Boolean(c));
 
   const LeaderCard = ({
-    title,
+    label,
     stat,
     leader,
     position,
     entries
-  }: {
-    title: string;
-    stat: string;
-    leader: string;
-    position: string;
-    entries: { name: string; value: string; imageUrl?: string }[];
-  }) => (
+  }: LeaderCardData) => (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 card-glow grid gap-3 hover:border-habboSky/30 hover:bg-white/8 transition-all hover:scale-[1.02]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs text-white/60 uppercase mb-1">{title}</p>
+          <p className="text-xs text-white/60 uppercase mb-1">{label}</p>
           <p className="text-4xl md:text-5xl font-black leading-none">{stat}</p>
           <p className="mt-2 font-semibold">{leader}</p>
           <p className="text-xs text-white/60">{position}</p>
         </div>
-        <div className="w-20 h-24 rounded-xl bg-white/8 border border-white/10" />
+        <div className="w-20 h-24 rounded-xl bg-white/8 border border-white/10 overflow-hidden flex-shrink-0">
+          {leader && (avatarMap[leader] || entries.find((e) => e.name === leader)?.imageUrl) && (
+            <img src={(entries.find((e) => e.name === leader)?.imageUrl) || avatarMap[leader]} alt={leader} className="w-full h-full object-contain p-1" />
+          )}
+        </div>
       </div>
       <div className="divide-y divide-white/5 rounded-xl border border-white/5 bg-white/3">
         {entries.map((item) => (
           <div key={item.name} className="flex items-center gap-3 px-3 py-2">
-            <Avatar name={item.name} imageUrl={item.imageUrl} />
+            <Avatar name={item.name} imageUrl={item.imageUrl || avatarMap[item.name]} />
             <div className="flex-1">
               <p className="text-sm font-medium">{item.name}</p>
             </div>
@@ -614,36 +802,73 @@ const StatsPage = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1.1fr,1fr] items-start">
         {/* Equipo destacado */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow lg:sticky lg:top-6 lg:self-start">
           <p className="text-xs sm:text-sm text-white/70 mb-2">Equipo destacado</p>
-          <div className="flex flex-col gap-2 mb-4">
-            <h3 className="text-xl sm:text-2xl font-display">{featured.name}</h3>
-            <p className="text-xs sm:text-base text-white/70">{featured.city} · {featured.record}</p>
-          </div>
-          <div className="space-y-3">
-            <StatBar label="Poder" value={featured.power} color="bg-habboOrange" />
-            <StatBar label="Contacto" value={featured.contact} color="bg-habboMint" />
-            <StatBar label="Defensa" value={featured.defense} color="bg-habboSky" />
-            <StatBar label="Velocidad" value={featured.speed} color="bg-habboBrick" />
-          </div>
-          <div className="mt-3 sm:mt-4">
-            <p className="text-xs sm:text-sm text-white/70 mb-1 sm:mb-2">Alineación</p>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {featured.lineup.map((p) => (
-                <span key={p} className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-white/10">{p}</span>
-              ))}
-            </div>
-          </div>
+          {featured ? (
+            <>
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-xl sm:text-2xl font-display">{featured.name}</h3>
+                  <p className="text-xs sm:text-base text-white/70">{featured.city} · {featured.record}</p>
+                </div>
+                {featured.logoUrl && (
+                  <img src={featured.logoUrl} alt={`${featured.name} logo`} className="h-14 sm:h-16 w-auto rounded-lg bg-white/8 border border-white/10 object-contain p-1" />
+                )}
+              </div>
+              {featured.hits !== undefined ? (
+                <>
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-white/80 mb-3">
+                    <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-white/60 text-[10px] sm:text-xs">HITS</p>
+                      <p className="font-semibold text-sm sm:text-base">{featured.hits}</p>
+                    </span>
+                    <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-white/60 text-[10px] sm:text-xs">RUNS</p>
+                      <p className="font-semibold text-sm sm:text-base">{featured.runs}</p>
+                    </span>
+                    <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-white/60 text-[10px] sm:text-xs">HR</p>
+                      <p className="font-semibold text-sm sm:text-base">{featured.hr}</p>
+                    </span>
+                    <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-white/60 text-[10px] sm:text-xs">SO (P)</p>
+                      <p className="font-semibold text-sm sm:text-base">{featured.so}</p>
+                    </span>
+                  </div>
+                  <div className="mb-3">
+                    <p className="text-xs sm:text-sm text-white/70 mb-1 sm:mb-2">Integrantes</p>
+                    <p className="text-xs sm:text-sm text-white/80">{featured.members}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-3 mb-3">
+                  <StatBar label="Poder" value={featured.power || 0} color="bg-habboOrange" />
+                  <StatBar label="Contacto" value={featured.contact || 0} color="bg-habboMint" />
+                  <StatBar label="Defensa" value={featured.defense || 0} color="bg-habboSky" />
+                  <StatBar label="Velocidad" value={featured.speed || 0} color="bg-habboBrick" />
+                </div>
+              )}
+              <div className="mt-3 sm:mt-4">
+                <p className="text-xs sm:text-sm text-white/70 mb-1 sm:mb-2">Alineación</p>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {featured.lineup.map((p) => (
+                    <span key={p} className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full bg-white/10">{p}</span>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-white/60">Sin datos aún.</p>
+          )}
         </div>
 
         {/* TOP categorías */}
         <div className="grid gap-4 md:grid-cols-2">
-          <LeaderCard title="Impulsadas (RBI)" stat={battingLeaders[4].stat} leader={battingLeaders[4].leader} position={battingLeaders[4].position} entries={battingLeaders[4].entries} />
-          <LeaderCard title="Hits" stat={battingLeaders[5].stat} leader={battingLeaders[5].leader} position={battingLeaders[5].position} entries={battingLeaders[5].entries} />
-          <LeaderCard title="Jonrones (HR)" stat={battingLeaders[1].stat} leader={battingLeaders[1].leader} position={battingLeaders[1].position} entries={battingLeaders[1].entries} />
-          <LeaderCard title="SO (Ponches)" stat={pitchingLeaders[2].stat} leader={pitchingLeaders[2].leader} position={pitchingLeaders[2].position} entries={pitchingLeaders[2].entries} />
+          {topCards.map((card) => (
+            <LeaderCard key={card.label} {...card} />
+          ))}
         </div>
       </div>
 
@@ -661,7 +886,7 @@ const StatsPage = () => {
           <span className="text-[10px] sm:text-xs px-2 py-1 rounded bg-white/10">Top 4</span>
         </div>
         <div className="divide-y divide-white/5">
-          {teams.map((team, idx) => (
+          {teamsData.map((team, idx) => (
             <div key={team.name} className="py-2 sm:py-3 flex items-center gap-2 sm:gap-3">
               <div className="w-7 sm:w-8 h-7 sm:h-8 grid place-items-center rounded-lg bg-habboInk border border-white/10 font-semibold text-xs sm:text-sm">#{idx + 1}</div>
               <div className="flex-1 min-w-0">
@@ -701,21 +926,58 @@ const FaqPage = () => (
   </section>
 );
 
-const TeamsPage = () => (
+const TeamsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => (
   <section className="grid gap-4 sm:gap-5 md:grid-cols-2">
-    {teams.map((team) => (
+    {teamsData.length === 0 ? (
+      <div className="col-span-full text-center py-12 text-white/60">
+        <p className="text-lg">No hay equipos registrados aún.</p>
+      </div>
+    ) : (
+      teamsData.map((team) => (
         <div key={team.name} className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow hover:border-habboMint/30 hover:bg-white/8 transition-all hover:scale-[1.02]">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-display text-lg sm:text-xl">{team.name}</h3>
+          <div className="flex items-center gap-2">
+            {'logo' in team && team.logo && (
+              <img src={(team as any).logo} alt={`${team.name} logo`} className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-lg bg-white/8 border border-white/10 object-contain p-1" />
+            )}
+            <h3 className="font-display text-lg sm:text-xl">{team.name}</h3>
+          </div>
           <span className="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full bg-habboOrange text-[#1f1d2b] font-semibold shadow-pixel hover:scale-110 transition-transform cursor-default">{team.record}</span>
         </div>
-        <p className="text-white/70 text-xs sm:text-sm mb-3">{team.city}</p>
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-white/80 mb-3">
-          <span>Poder: {team.power}</span>
-          <span>Contacto: {team.contact}</span>
-          <span>Defensa: {team.defense}</span>
-          <span>Velocidad: {team.speed}</span>
-        </div>
+          <p className="text-white/70 text-xs sm:text-sm mb-3">{team.city}</p>
+        {'hits' in team ? (
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-white/80 mb-3">
+            <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-white/60 text-[10px] sm:text-xs">HITS</p>
+              <p className="font-semibold text-sm sm:text-base">{team.hits}</p>
+            </span>
+            <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-white/60 text-[10px] sm:text-xs">RUNS</p>
+              <p className="font-semibold text-sm sm:text-base">{team.runs}</p>
+            </span>
+            <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-white/60 text-[10px] sm:text-xs">HR</p>
+              <p className="font-semibold text-sm sm:text-base">{team.hr}</p>
+            </span>
+            <span className="p-2 sm:p-3 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-white/60 text-[10px] sm:text-xs">SO (P)</p>
+              <p className="font-semibold text-sm sm:text-base">{team.so}</p>
+            </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm text-white/80 mb-3">
+            <span>Poder: {'power' in team ? team.power : 0}</span>
+            <span>Contacto: {'contact' in team ? team.contact : 0}</span>
+            <span>Defensa: {'defense' in team ? team.defense : 0}</span>
+            <span>Velocidad: {'speed' in team ? team.speed : 0}</span>
+          </div>
+        )}
+        {'members' in team && (
+          <div className="mb-3">
+            <p className="text-xs sm:text-sm text-white/70 mb-1 sm:mb-2">Integrantes</p>
+            <p className="text-xs sm:text-sm text-white/80">{team.members}</p>
+          </div>
+        )}
         <p className="text-[10px] sm:text-xs text-white/60 mb-1 sm:mb-2">Alineación</p>
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {team.lineup.map((p) => (
@@ -723,7 +985,8 @@ const TeamsPage = () => (
           ))}
         </div>
       </div>
-    ))}
+    ))
+    )}
   </section>
 );
 
@@ -814,74 +1077,113 @@ const PageHeader = ({ title, subtitle }: { title: string; subtitle: string }) =>
 );
 
 function App() {
+  const [teamsData, setTeamsData] = useState<TeamDoc[]>([]);
+
+  useEffect(() => {
+    const loadTeams = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'teams'), orderBy('order', 'asc')));
+        if (!snap.empty) {
+          const loaded = snap.docs.map((d) => ({ id: d.id, ...(d.data() as TeamDoc) }));
+          setTeamsData(loaded);
+        }
+      } catch (err) {
+        console.error('Error loading teams', err);
+      }
+    };
+
+    loadTeams();
+  }, []);
+
   return (
-    <Routes>
-      <Route element={<Shell />}>
-        <Route
-          index
-          element={
-            <>
-              <PageHeader title="Inicio" subtitle="Noticias y bienvenida a la liga roleplay de baseball en Habbo." />
-              <HomePage />
-            </>
-          }
-        />
-        <Route
-          path="/stats"
-          element={
-            <>
-              <PageHeader title="Estadísticas" subtitle="Tabla general, equipo destacado y barras de atributos." />
-              <StatsPage />
-            </>
-          }
-        />
-        <Route
-          path="/seasons"
-          element={
-            <>
-              <PageHeader title="Temporadas" subtitle="Histórico de seasons jugadas y próxima temporada." />
-              <SeasonsPage />
-            </>
-          }
-        />
-        <Route
-          path="/faq"
-          element={
-            <>
-              <PageHeader title="FAQ" subtitle="Respuestas rápidas sobre alineaciones, fichajes y cómo empezar." />
-              <FaqPage />
-            </>
-          }
-        />
-        <Route
-          path="/teams"
-          element={
-            <>
-              <PageHeader title="Equipos" subtitle="Planteles inscritos con stats y alineación visible." />
-              <TeamsPage />
-            </>
-          }
-        />
-        <Route
-          path="/rules"
-          element={
-            <>
-              <PageHeader title="Reglas" subtitle="Normativa oficial y código de conducta de la WBL." />
-              <RulesPage />
-            </>
-          }
-        />
-        <Route
-          path="/founders"
-          element={
-            <>
-              <PageHeader title="Créditos" subtitle="Los visionarios que hicieron posible la World Baseball League." />
-              <FoundersPage />
-            </>
-          }
-        />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center bg-[#0f1018] text-white">
+            Cargando...
+          </div>
+        }
+      >
+        <Routes>
+          <Route element={<Shell />}>
+          <Route
+            index
+            element={
+              <>
+                <PageHeader title="Inicio" subtitle="Noticias y bienvenida a la liga roleplay de baseball en Habbo." />
+                <HomePage />
+              </>
+            }
+          />
+          <Route
+            path="/stats"
+            element={
+              <>
+                <PageHeader title="Estadísticas" subtitle="Tabla general, equipo destacado y barras de atributos." />
+                <StatsPage teamsData={teamsData} />
+              </>
+            }
+          />
+          <Route
+            path="/seasons"
+            element={
+              <>
+                <PageHeader title="Temporadas" subtitle="Histórico de seasons jugadas y próxima temporada." />
+                <SeasonsPage />
+              </>
+            }
+          />
+          <Route
+            path="/faq"
+            element={
+              <>
+                <PageHeader title="FAQ" subtitle="Respuestas rápidas sobre alineaciones, fichajes y cómo empezar." />
+                <FaqPage />
+              </>
+            }
+          />
+          <Route
+            path="/teams"
+            element={
+              <>
+                <PageHeader title="Equipos" subtitle="Planteles inscritos con stats y alineación visible." />
+                <TeamsPage teamsData={teamsData} />
+              </>
+            }
+          />
+          <Route
+            path="/rules"
+            element={
+              <>
+                <PageHeader title="Reglas" subtitle="Normativa oficial y código de conducta de la WBL." />
+                <RulesPage />
+              </>
+            }
+          />
+          <Route
+            path="/founders"
+            element={
+              <>
+                <PageHeader title="Créditos" subtitle="Los visionarios que hicieron posible la World Baseball League." />
+                <FoundersPage />
+              </>
+            }
+          />
+        </Route>
+        
+          {/* Admin Routes - hidden from navbar */}
+          <Route path="/admin-wbl-2026/login" element={<LoginPage />} />
+          <Route
+            path="/admin-wbl-2026"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
+    </AuthProvider>
   );
 }
 

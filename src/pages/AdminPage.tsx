@@ -654,8 +654,8 @@ const AdminPage = () => {
                             />
                           </div>
                         )}
-                        <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
-                        <p className="text-xs text-white/75">{item.body}</p>
+                        <h3 className="font-semibold text-sm mb-1 line-clamp-2">{item.title}</h3>
+                        <p className="text-xs text-white/75 line-clamp-2">{item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body}</p>
                         <div className="flex justify-end mt-2">
                           <button
                             onClick={() => requestDelete(item.id, item.title)}
@@ -1059,7 +1059,7 @@ const AdminPage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-display text-lg mb-2">Eliminar noticia</h3>
-            <p className="text-sm text-white/80 mb-4">¿Seguro que quieres eliminar "{confirmTitle}"? Esta acción no se puede deshacer.</p>
+            <p className="text-sm text-white/80 mb-4">¿Seguro que quieres eliminar esta noticia? Esta acción no se puede deshacer.</p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmId(null)}

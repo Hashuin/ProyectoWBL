@@ -682,8 +682,8 @@ const HomePage = () => {
                       />
                     </div>
                   )}
-                  <h3 className="font-semibold mb-1 text-sm sm:text-base">{item.title}</h3>
-                  <p className="text-xs sm:text-sm text-white/75">{item.body}</p>
+                  <h3 className="font-semibold mb-1 text-sm sm:text-base line-clamp-2">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-white/75 line-clamp-2">{item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body}</p>
                 </article>
               ))}
             </div>

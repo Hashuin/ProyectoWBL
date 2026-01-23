@@ -195,13 +195,14 @@ export default function ScheduleAdmin() {
                   </label>
                   <input
                     type="number"
-                    value={formData.homeTeamScore || ''}
-                    onChange={(e) =>
+                    value={formData.homeTeamScore ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
                       setFormData({
                         ...formData,
-                        homeTeamScore: parseInt(e.target.value) || undefined
-                      })
-                    }
+                        homeTeamScore: value === '' ? undefined : parseInt(value, 10)
+                      });
+                    }}
                     className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
                   />
                 </div>
@@ -211,13 +212,14 @@ export default function ScheduleAdmin() {
                   </label>
                   <input
                     type="number"
-                    value={formData.awayTeamScore || ''}
-                    onChange={(e) =>
+                    value={formData.awayTeamScore ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
                       setFormData({
                         ...formData,
-                        awayTeamScore: parseInt(e.target.value) || undefined
-                      })
-                    }
+                        awayTeamScore: value === '' ? undefined : parseInt(value, 10)
+                      });
+                    }}
                     className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
                   />
                 </div>

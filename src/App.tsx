@@ -766,10 +766,6 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
   const champion = statsData?.champion || defaultChampion;
   const battingData = statsData?.leadersBatting?.length ? statsData.leadersBatting : (battingLeaders as LeaderCardData[]);
   const pitchingData = statsData?.leadersPitching?.length ? statsData.leadersPitching : (pitchingLeaders as LeaderCardData[]);
-  const orderedLabels = ['Impulsadas', 'Hits', 'Jonrones', 'Carreras', 'Ponches', 'OPS'];
-  const topCards = orderedLabels
-    .map((lbl) => [...battingData, ...pitchingData].find((c) => c.label.toLowerCase() === lbl.toLowerCase()))
-    .filter((c): c is LeaderCardData => Boolean(c));
 
   const LeaderCard = ({
     label,
@@ -870,11 +866,24 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
           )}
         </div>
 
-        {/* TOP categorías */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {topCards.map((card) => (
-            <LeaderCard key={card.label} {...card} />
-          ))}
+        {/* Líderes (consistentes con Admin) */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de bateo</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {battingData.map((card) => (
+                <LeaderCard key={`bat-${card.label}`} {...card} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de pitcheo</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {pitchingData.map((card) => (
+                <LeaderCard key={`pit-${card.label}`} {...card} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

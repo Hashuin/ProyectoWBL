@@ -454,6 +454,16 @@ const AdminPage = () => {
     });
   };
 
+  const removeLeaderCard = (type: 'leadersBatting' | 'leadersPitching', cardIdx: number) => {
+    setStatsForm((prev) => {
+      const draft = JSON.parse(JSON.stringify(prev)) as StatsDoc;
+      // No permitir eliminar si solo hay 1 tarjeta
+      if (draft[type].length <= 1) return prev;
+      draft[type].splice(cardIdx, 1);
+      return draft;
+    });
+  };
+
   const saveStats = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -851,7 +861,19 @@ const AdminPage = () => {
                     <p className="text-[11px] text-white/60">Llena cada tarjeta con el label (ej. OPS) y la línea principal; debajo agrega entradas para top 3.</p>
                     <div className="space-y-3">
                       {statsForm.leadersBatting.map((card, idx) => (
-                        <div key={`bat-${idx}`} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3">
+                        <div key={`bat-${idx}`} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3 relative">
+                          {statsForm.leadersBatting.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeLeaderCard('leadersBatting', idx)}
+                              className="absolute top-2 right-2 p-1.5 rounded bg-habboBrick/80 hover:bg-habboBrick text-white transition-colors"
+                              title="Eliminar tarjeta"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          )}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <div className="space-y-1">
                               <label className="block text-xs text-white/70">Label (ej. OPS)</label>
@@ -929,7 +951,19 @@ const AdminPage = () => {
                   <p className="text-[11px] text-white/60">Usa los mismos labels que en la vista pública (SO, ERA, etc.).</p>
                   <div className="space-y-3">
                     {statsForm.leadersPitching.map((card, idx) => (
-                      <div key={`pit-${idx}`} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3">
+                      <div key={`pit-${idx}`} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3 relative">
+                        {statsForm.leadersPitching.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeLeaderCard('leadersPitching', idx)}
+                            className="absolute top-2 right-2 p-1.5 rounded bg-habboBrick/80 hover:bg-habboBrick text-white transition-colors"
+                            title="Eliminar tarjeta"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                           <div className="space-y-1">
                             <label className="block text-xs text-white/70">Label (ej. SO)</label>

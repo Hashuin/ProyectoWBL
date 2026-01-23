@@ -156,11 +156,11 @@ const faqs = [
 ];
 
 const founders = [
-  { name: 'Lucas', role: 'Fundador', bio: 'Visionario y líder del proyecto WBL.', size: 'normal', image: '/avatars/lucas.png' },
-  { name: 'Kush', role: 'Director de Tecnología', bio: 'Encargado del desarrollo técnico y coordinación general del proyecto.', size: 'normal', image: '/avatars/kush.png' },
-  { name: 'xzxxzc', role: 'Desarrollador de Aplicaciones', bio: 'Desarrolla herramientas y aplicaciones para la gestión de la liga.', size: 'normal', image: '/avatars/pepe.png' },
-  { name: 'JJ', role: 'Inversionista', bio: 'Brinda el respaldo financiero para hacer realidad la liga.', size: 'normal', image: '/avatars/wya.png' },
-  { name: 'Flash', role: 'Diseñador', bio: 'Responsable de la identidad visual y estética del proyecto.', size: 'normal', image: '/avatars/flash.png' },
+  { name: 'Lucas', role: 'Fundador', bio: 'Visionario y líder del proyecto WBL.', size: 'normal', image: '/avatars/lucas.png', profileUrl: 'http://hobbaz.es/profile/robertoconla9' },
+  { name: 'Kush', role: 'Director de Tecnología', bio: 'Encargado del desarrollo técnico y coordinación general del proyecto.', size: 'normal', image: '/avatars/kush.png', profileUrl: 'http://hobbaz.es/profile/Kush' },
+  { name: 'xzxxzc', role: 'Desarrollador de Aplicaciones', bio: 'Desarrolla herramientas y aplicaciones para la gestión de la liga.', size: 'normal', image: '/avatars/pepe.png', profileUrl: 'http://hobbaz.es/profile/xzxxzc' },
+  { name: 'JJ', role: 'Inversionista', bio: 'Brinda el respaldo financiero para hacer realidad la liga.', size: 'normal', image: '/avatars/wya.png', profileUrl: 'http://hobbaz.es/profile/420am' },
+  { name: 'Flash', role: 'Diseñador', bio: 'Responsable de la identidad visual y estética del proyecto.', size: 'normal', image: '/avatars/flash.png', profileUrl: 'http://hobbaz.es/profile/ShoheiOhtani' },
   { name: 'Skyripa', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' },
   { name: 'Alucard', role: 'Colaborador', bio: 'Apoyo en el desarrollo del proyecto.', size: 'small' }
 ];
@@ -1054,24 +1054,36 @@ const FoundersPage = () => (
 
     <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
       {founders.filter(f => f.size === 'normal').map((founder) => (
-        <div key={founder.name} className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow hover:border-habboGold/40 hover:bg-white/8 transition-all hover:scale-[1.02]">
+        <a
+          key={founder.name}
+          href={founder.profileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow hover:border-habboGold/60 hover:bg-white/12 transition-all hover:scale-[1.05] hover:shadow-[0_0_20px_rgba(246,196,69,0.4)] cursor-pointer group"
+        >
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             {founder.image ? (
-              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 flex-shrink-0 hover:scale-110 transition-transform flex items-center justify-center p-1 overflow-hidden">
+              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 flex-shrink-0 group-hover:scale-110 transition-transform flex items-center justify-center p-1 overflow-hidden group-hover:border-habboGold/80 group-hover:shadow-[0_0_15px_rgba(255,156,51,0.6)]">
                 <img src={founder.image} alt={founder.name} className="w-full h-full object-contain" />
               </div>
             ) : (
-              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 grid place-items-center hover:scale-110 transition-transform flex-shrink-0">
+              <div className="w-12 sm:w-14 md:w-16 h-12 sm:h-14 md:h-16 rounded-full bg-gradient-to-br from-habboOrange/30 via-habboGold/20 to-transparent border-2 border-habboGold/40 grid place-items-center group-hover:scale-110 transition-transform flex-shrink-0 group-hover:border-habboGold/80 group-hover:shadow-[0_0_15px_rgba(255,156,51,0.6)]">
                 <span className="text-lg sm:text-xl md:text-2xl font-black text-habboGold">{founder.name.slice(0, 1)}</span>
               </div>
             )}
             <div className="min-w-0">
-              <h3 className="font-display text-base sm:text-lg md:text-xl truncate">{founder.name}</h3>
-              <p className="text-[10px] sm:text-xs text-white/60 uppercase truncate">{founder.role}</p>
+              <h3 className="font-display text-base sm:text-lg md:text-xl truncate group-hover:text-habboGold transition-colors">{founder.name}</h3>
+              <p className="text-[10px] sm:text-xs text-white/60 uppercase truncate group-hover:text-habboOrange transition-colors">{founder.role}</p>
             </div>
           </div>
-          <p className="text-white/75 text-xs sm:text-sm leading-relaxed">{founder.bio}</p>
-        </div>
+          <p className="text-white/75 text-xs sm:text-sm leading-relaxed group-hover:text-white/90 transition-colors">{founder.bio}</p>
+          <div className="mt-3 sm:mt-4 flex items-center gap-2 text-xs text-white/60 group-hover:text-habboGold transition-colors opacity-0 group-hover:opacity-100">
+            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span>Ver perfil en Hobbaz</span>
+          </div>
+        </a>
       ))}
     </div>
     

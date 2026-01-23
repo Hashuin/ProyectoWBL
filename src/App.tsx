@@ -767,6 +767,15 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
   const battingData = statsData?.leadersBatting?.length ? statsData.leadersBatting : (battingLeaders as LeaderCardData[]);
   const pitchingData = statsData?.leadersPitching?.length ? statsData.leadersPitching : (pitchingLeaders as LeaderCardData[]);
 
+  const isNonEmpty = (s?: string) => (s ?? '').toString().trim().length > 0;
+  const cardHasContent = (c: LeaderCardData) => {
+    const hasHeader = isNonEmpty(c.label) || isNonEmpty(c.stat) || isNonEmpty(c.leader) || isNonEmpty(c.position);
+    const hasEntries = Array.isArray(c.entries) && c.entries.some(e => isNonEmpty(e.name) || isNonEmpty(e.value) || isNonEmpty(e.imageUrl));
+    return hasHeader || hasEntries;
+  };
+  const filteredBatting = battingData.filter(cardHasContent);
+  const filteredPitching = pitchingData.filter(cardHasContent);
+
   const LeaderCard = ({
     label,
     stat,
@@ -868,22 +877,26 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
 
         {/* Líderes (consistentes con Admin) */}
         <div className="space-y-4">
-          <div>
-            <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de bateo</p>
-            <div className="grid gap-4 md:grid-cols-2">
-              {battingData.map((card) => (
-                <LeaderCard key={`bat-${card.label}`} {...card} />
-              ))}
+          {filteredBatting.length > 0 && (
+            <div>
+              <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de bateo</p>
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredBatting.map((card) => (
+                  <LeaderCard key={`bat-${card.label}-${card.stat}-${card.leader}`} {...card} />
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de pitcheo</p>
-            <div className="grid gap-4 md:grid-cols-2">
-              {pitchingData.map((card) => (
-                <LeaderCard key={`pit-${card.label}`} {...card} />
-              ))}
+          )}
+          {filteredPitching.length > 0 && (
+            <div>
+              <p className="text-xs sm:text-sm text-white/70 mb-2">Líderes de pitcheo</p>
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredPitching.map((card) => (
+                  <LeaderCard key={`pit-${card.label}-${card.stat}-${card.leader}`} {...card} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

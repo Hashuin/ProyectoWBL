@@ -504,7 +504,7 @@ const Shell = () => {
               <img src="/LogoWBL.png" alt="WBL Logo" className="h-14 sm:h-16 md:h-20 w-auto drop-shadow-[0_0_12px_rgba(255,156,51,0.6)]" />
             </Link>
             <div className="leading-tight">
-              <p className="font-display text-sm sm:text-lg">Liga de Baseball · Habbaz</p>
+              <p className="font-display text-sm sm:text-lg">Liga de Baseball · Hobbaz</p>
               <p className="text-xs text-white/70">Temporada 1 · Hobbaz</p>
             </div>
           </div>
@@ -567,7 +567,7 @@ const Shell = () => {
       <footer className="border-t border-white/10 bg-[#0b0c12] mt-auto">
         <div className="mx-auto max-w-6xl px-4 sm:px-5 py-4 sm:py-6 flex flex-col sm:flex-row flex-wrap gap-4 items-center justify-between">
           <div className="text-center sm:text-left">
-            <p className="font-display text-base sm:text-lg">World Baseball League · Habbo</p>
+            <p className="font-display text-base sm:text-lg">World Baseball League · Hobbaz</p>
             <p className="text-white/60 text-xs sm:text-sm">© 2026 WBL. Todos los derechos reservados. Proyecto de rol, no oficial.</p>
           </div>
           <a

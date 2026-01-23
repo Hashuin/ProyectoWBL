@@ -7,6 +7,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const SchedulePage = lazy(() => import('./pages/SchedulePage'));
+const StandingsPage = lazy(() => import('./pages/StandingsPage'));
 
 interface NewsItem {
   title: string;
@@ -438,6 +440,8 @@ const battingTable = [
 
 const navItems = [
   { to: '/', label: 'Inicio' },
+  { to: '/schedule', label: 'Programación' },
+  { to: '/standings', label: 'Clasificación' },
   { to: '/seasons', label: 'Temporada' },
   { to: '/teams', label: 'Equipos' },
   { to: '/stats', label: 'Estadísticas' },
@@ -476,6 +480,8 @@ const Shell = () => {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/': 'Inicio',
+      '/schedule': 'Programación',
+      '/standings': 'Clasificación',
       '/stats': 'Estadísticas',
       '/seasons': 'Temporadas',
       '/faq': 'FAQ',
@@ -1167,6 +1173,22 @@ function App() {
                 <PageHeader title="Créditos" subtitle="Los visionarios que hicieron posible la World Baseball League." />
                 <FoundersPage />
               </>
+            }
+          />
+          <Route
+            path="/schedule"
+            element={
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p>Cargando...</p></div>}>
+                <SchedulePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/standings"
+            element={
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p>Cargando...</p></div>}>
+                <StandingsPage />
+              </Suspense>
             }
           />
         </Route>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, addDoc, query, orderBy, limit, getDocs, Timestamp, deleteDoc, doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import ScheduleAdmin from '../components/admin/ScheduleAdmin';
+import StandingsAdmin from '../components/admin/StandingsAdmin';
 
 interface NewsItem {
   id?: string;
@@ -55,7 +57,7 @@ interface StatsDoc {
 }
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState<'news' | 'teams' | 'stats'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'teams' | 'stats' | 'schedule' | 'standings'>('news');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [tag, setTag] = useState('Temporada');
@@ -491,7 +493,9 @@ const AdminPage = () => {
             {[
               { key: 'news', label: 'Noticias' },
               { key: 'teams', label: 'Equipos' },
-              { key: 'stats', label: 'Estadísticas' }
+              { key: 'stats', label: 'Estadísticas' },
+              { key: 'schedule', label: 'Programación' },
+              { key: 'standings', label: 'Clasificación' }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -1003,6 +1007,18 @@ const AdminPage = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {activeTab === 'schedule' && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 card-glow">
+              <ScheduleAdmin />
+            </div>
+          )}
+
+          {activeTab === 'standings' && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 card-glow">
+              <StandingsAdmin />
             </div>
           )}
         </div>

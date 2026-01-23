@@ -505,7 +505,7 @@ const Shell = () => {
             </Link>
             <div className="leading-tight">
               <p className="font-display text-sm sm:text-lg">Liga de Baseball · Habbaz</p>
-              <p className="text-xs text-white/70">Temporada 1 · Universo Pixel</p>
+              <p className="text-xs text-white/70">Temporada 1 · Hobbaz</p>
             </div>
           </div>
           

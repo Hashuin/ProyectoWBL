@@ -137,7 +137,7 @@ const seasons = [
   {
     name: 'Season 1 · 2026',
     status: 'Próxima',
-    highlight: 'Regresa el modo noche en el estadio Habbo Square.',
+    highlight: 'Apertura de la primera temporada de la World Baseball League.',
     starts: 'Por definir'
   }
 ];
@@ -146,12 +146,12 @@ const faqs = [
   {
     question: '¿De cuántos jugadores está compuesta la alineación del equipo?',
     answer:
-      'Dos equipos de hasta cinco jugadores. El LOCAL inicia fildeando con tres: pitcher, líder/estratega y short/primera según situación. Tras 3 outs, batean cuatro o hasta cinco en orden comunicado al árbitro.'
+      'Cada equipo se compone de 4 jugadores y hasta dos suplentes opcionales. La alineación se define según el rol defensivo de cada jugador. Pitcher, shortstop o primera base.'
   },
   {
     question: '¿Cómo empiezo mi carrera dentro de la liga?',
     answer:
-      'Únete al Discord y busca a los capacitadores. Te enseñan lo básico. Puedes esperar a mercado de fichajes o fichar como AGENTE LIBRE si un equipo necesita jugador.'
+      'Si no sabes jugar, asegúrate de unirte al discord y buscar ayuda. La comunidad estará dispuesta a enseñarte lo básico para comenzar a jugar. Si estás interesado en unirte como jugador, en el discord encontrarás un canal llamado "agencia-libre" donde podrás postularte para que los equipos te contacten.'
   }
 ];
 
@@ -504,7 +504,7 @@ const Shell = () => {
               <img src="/LogoWBL.png" alt="WBL Logo" className="h-14 sm:h-16 md:h-20 w-auto drop-shadow-[0_0_12px_rgba(255,156,51,0.6)]" />
             </Link>
             <div className="leading-tight">
-              <p className="font-display text-sm sm:text-lg">Liga de Baseball · Habbo</p>
+              <p className="font-display text-sm sm:text-lg">Liga de Baseball · Habbaz</p>
               <p className="text-xs text-white/70">Temporada 1 · Universo Pixel</p>
             </div>
           </div>
@@ -624,19 +624,19 @@ const HomePage = () => {
       <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 card-glow relative z-10">
         <div className="section-title mb-4 text-[8px] sm:text-[10px]">Bienvenida</div>
         <h1 className="font-display text-2xl sm:text-3xl md:text-4xl leading-tight mb-3">
-          Bienvenido a la World Baseball League de Habbo
+          Bienvenido a la World Baseball League
         </h1>
         <p className="text-sm sm:text-base text-white/80 mb-4 sm:mb-6">
-          Liga oficial roleplay con fixtures semanales, mercado de fichajes, transmisión en salas Habbo y stats en vivo. Vive el pixel-ball con estética retro y comunidades activas.
+          Liga oficial con fixtures y diseños semanales, mercado de fichajes, transmisión de partidos y stats en vivo.
         </p>
         <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
           <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
             <p className="text-xs sm:text-sm text-white/70 mb-1">Arranque temporada</p>
-            <p className="font-semibold text-base sm:text-lg">12 Feb · 20:00 HBT</p>
+            <p className="font-semibold text-base sm:text-lg">Por definir.</p>
           </div>
           <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
             <p className="text-xs sm:text-sm text-white/70 mb-1">Estadio</p>
-            <p className="font-semibold text-base sm:text-lg">Habbo Square · Lobby</p>
+            <p className="font-semibold text-base sm:text-lg">Estadio Oficial - WBL</p>
           </div>
         </div>
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
@@ -880,7 +880,7 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
 
       {/* Actual campeón */}
       <div className="bg-gradient-to-br from-habboGold/20 via-habboOrange/20 to-transparent border border-white/10 rounded-2xl p-4 sm:p-6">
-        <div className="section-title mb-3 text-[8px] sm:text-[10px]">Actual campeón</div>
+        <div className="section-title mb-3 text-[8px] sm:text-[10px]">Actual campeon</div>
         <p className="font-display text-lg sm:text-xl mb-1">{champion.name}</p>
         <p className="text-xs sm:text-sm text-white/70">{champion.season} · {champion.detail}</p>
       </div>
@@ -1014,9 +1014,9 @@ const TeamsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => (
 const RulesPage = () => (
   <section className="space-y-5 sm:space-y-6">
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow">
-      <div className="section-title mb-3 sm:mb-4 text-lg sm:text-2xl">Reglas oficiales</div>
+      <div className="section-title mb-3 sm:mb-4 text-lg sm:text-2xl">Normativa oficial de la WBL</div>
       <p className="text-white/80 mb-4 sm:mb-6 text-sm sm:text-base">
-        Las reglas de la World Baseball League están diseñadas para garantizar un juego justo, competitivo y entretenido en el universo roleplay de Habbo.
+        Las reglas de la World Baseball League están diseñadas para garantizar un juego justo, competitivo y entretenido.
       </p>
       <div className="space-y-3 sm:space-y-5">
         {rules.map((rule) => (
@@ -1031,7 +1031,7 @@ const RulesPage = () => (
     <div className="bg-gradient-to-br from-habboOrange/20 via-habboGold/15 to-transparent border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6">
       <div className="section-title mb-2 sm:mb-3 text-lg sm:text-2xl">Consulta las reglas completas</div>
       <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
-        ¿Quieres conocer el reglamento completo con mecánicas detalladas, sistema de arbitraje y todas las normativas oficiales? Visita nuestro Discord oficial donde encontrarás toda la información actualizada.
+        ¿Quieres conocer el reglamento actualizado, ver tutoriales de las mecánicas y enterarte de todo sobre la liga? Visita nuestro Discord Oficial donde encontrarás toda la información que necesitas.
       </p>
       <a className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg bg-habboOrange text-[#0f1018] font-semibold shadow-pixel relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:translate-x-[-200%] hover:before:animate-shimmer hover:scale-105 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-habboGold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1018] text-xs sm:text-sm whitespace-nowrap" href="https://discord.gg/9ufJQpkq4S" target="_blank" rel="noopener noreferrer">
         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -1046,9 +1046,9 @@ const RulesPage = () => (
 const FoundersPage = () => (
   <section className="space-y-5 sm:space-y-6">
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6 card-glow">
-      <div className="section-title mb-3 sm:mb-4 text-lg sm:text-2xl">Créditos</div>
+      <div className="section-title mb-3 sm:mb-4 text-lg sm:text-2xl">Creditos</div>
       <p className="text-white/80 mb-4 sm:mb-6 text-sm sm:text-base">
-        La World Baseball League fue creada por un grupo apasionado de roleplay en Habbo. Estos visionarios transformaron el concepto de baseball pixel en una experiencia competitiva única.
+        La World Baseball League fue creada por un grupo apasionado de roleplay en Habbo. Este grupo transformó el concepto de baseball en una experiencia competitiva única.
       </p>
     </div>
 
@@ -1094,7 +1094,7 @@ const FoundersPage = () => (
     </div>
 
     <div className="bg-gradient-to-br from-habboMint/20 via-habboSky/15 to-transparent border border-white/10 rounded-2xl p-4 sm:p-5 md:p-6">
-      <div className="section-title mb-2 sm:mb-3 text-lg sm:text-2xl">Únete al legado</div>
+      <div className="section-title mb-2 sm:mb-3 text-lg sm:text-2xl">Unete al legado</div>
       <p className="text-white/80 mb-3 sm:mb-4 text-sm sm:text-base">
         Gracias a todo el equipo, la WBL sigue creciendo temporada tras temporada. Únete a la comunidad y forma parte de esta historia.
       </p>
@@ -1146,7 +1146,7 @@ function App() {
             index
             element={
               <>
-                <PageHeader title="Inicio" subtitle="Noticias y bienvenida a la liga roleplay de baseball en Habbo." />
+                <PageHeader title="Inicio" subtitle="Noticias y bienvenida a la liga roleplay de baseball en Hobbaz." />
                 <HomePage />
               </>
             }
@@ -1155,7 +1155,7 @@ function App() {
             path="/stats"
             element={
               <>
-                <PageHeader title="Estadísticas" subtitle="Tabla general, equipo destacado y barras de atributos." />
+                <PageHeader title="Estadisticas" subtitle="Tabla general, equipo destacado y top de estadísticas." />
                 <StatsPage teamsData={teamsData} />
               </>
             }
@@ -1200,7 +1200,7 @@ function App() {
             path="/founders"
             element={
               <>
-                <PageHeader title="Créditos" subtitle="Los visionarios que hicieron posible la World Baseball League." />
+                <PageHeader title="Creditos" subtitle="Los visionarios que hicieron posible la World Baseball League." />
                 <FoundersPage />
               </>
             }

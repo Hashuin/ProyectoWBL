@@ -756,11 +756,14 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
   }, []);
 
   const featured = useMemo(() => {
-    if (statsData?.featuredTeamId) {
-      const found = teamsData.find((t) => t.id === statsData.featuredTeamId);
-      if (found) return found;
+    if (statsData) {
+      if (statsData.featuredTeamId === '') return null; // admin chose no featured
+      if (statsData.featuredTeamId) {
+        const found = teamsData.find((t) => t.id === statsData.featuredTeamId);
+        if (found) return found;
+      }
     }
-    return teamsData[0];
+    return teamsData[0] || null;
   }, [statsData, teamsData]);
 
   const champion = statsData?.champion || defaultChampion;
@@ -876,7 +879,7 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
               </div>
             </>
           ) : (
-            <p className="text-sm text-white/60">Sin datos aún.</p>
+            <p className="text-sm text-white/60">Sin equipo destacado seleccionado.</p>
           )}
         </div>
 

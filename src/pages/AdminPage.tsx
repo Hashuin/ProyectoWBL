@@ -879,13 +879,28 @@ const AdminPage = () => {
                     </div>
                     <div className="space-y-2">
                       <label className="block text-sm text-white/80">Equipo destacado</label>
-                      <select className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white" value={statsForm.featuredTeamId} onChange={(e) => handleStatsChange('featuredTeamId', e.target.value)}>
-                        <option value="">Seleccione equipo</option>
-                        {teams.map((t) => (
-                          <option key={t.id} value={t.id}>{t.name}</option>
-                        ))}
-                      </select>
-                      <p className="text-[11px] text-white/60">Se mostrará como destacado en la sección pública.</p>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          <select
+                            className="flex-1 min-w-[240px] px-3 py-2 rounded-lg bg-[#1f2937] border border-white/20 text-white"
+                            value={statsForm.featuredTeamId}
+                            onChange={(e) => handleStatsChange('featuredTeamId', e.target.value)}
+                          >
+                            <option className="bg-[#111827] text-white" value="">(Sin destacado)</option>
+                            {teams.map((t) => (
+                              <option className="bg-[#111827] text-white" key={t.id} value={t.id}>{t.name}</option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => handleStatsChange('featuredTeamId', '')}
+                            className="px-3 py-2 rounded-lg border border-white/20 text-white hover:bg-white/10"
+                          >
+                            Quitar destacado
+                          </button>
+                        </div>
+                        <p className="text-[11px] text-white/60">Selecciona un equipo o deja “Sin destacado” para ocultarlo en la vista pública.</p>
+                      </div>
                     </div>
                   </div>
 

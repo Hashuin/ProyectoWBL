@@ -931,18 +931,19 @@ const AdminPage = () => {
                                         <input type="file" accept="image/*" onChange={(e) => handleLeaderEntryUpload(e, 'leadersBatting', idx, eIdx)} className="hidden" />
                                         <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
                                       </label>
-                                      {entry.imageUrl && (
-                                        <div className="flex items-center gap-2">
+                                      <div className="flex items-center gap-2">
+                                        {entry.imageUrl && (
                                           <img src={entry.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                          <button
-                                            type="button"
-                                            onClick={() => handleLeaderEntryChange('leadersBatting', idx, eIdx, 'imageUrl', '')}
-                                            className="text-[11px] px-2 py-1 rounded bg-habboBrick/80 text-white hover:bg-habboBrick"
-                                          >
-                                            Quitar
-                                          </button>
-                                        </div>
-                                      )}
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={() => handleLeaderEntryChange('leadersBatting', idx, eIdx, 'imageUrl', '')}
+                                          className={`text-[11px] px-2 py-1 rounded ${entry.imageUrl ? 'bg-habboBrick/80 hover:bg-habboBrick text-white' : 'bg-white/10 text-white/50 cursor-pointer hover:bg-white/15'}`}
+                                          disabled={!entry.imageUrl}
+                                        >
+                                          Quitar
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1027,18 +1028,19 @@ const AdminPage = () => {
                                       <input type="file" accept="image/*" onChange={(e) => handleLeaderEntryUpload(e, 'leadersPitching', idx, eIdx)} className="hidden" />
                                       <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
                                     </label>
-                                    {entry.imageUrl && (
-                                      <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2">
+                                      {entry.imageUrl && (
                                         <img src={entry.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                        <button
-                                          type="button"
-                                          onClick={() => handleLeaderEntryChange('leadersPitching', idx, eIdx, 'imageUrl', '')}
-                                          className="text-[11px] px-2 py-1 rounded bg-habboBrick/80 text-white hover:bg-habboBrick"
-                                        >
-                                          Quitar
-                                        </button>
-                                      </div>
-                                    )}
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleLeaderEntryChange('leadersPitching', idx, eIdx, 'imageUrl', '')}
+                                        className={`text-[11px] px-2 py-1 rounded ${entry.imageUrl ? 'bg-habboBrick/80 hover:bg-habboBrick text-white' : 'bg-white/10 text-white/50 cursor-pointer hover:bg-white/15'}`}
+                                        disabled={!entry.imageUrl}
+                                      >
+                                        Quitar
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>

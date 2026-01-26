@@ -300,15 +300,14 @@ const AdminPage = () => {
         order: teamForm.order || teams.length + 1
       };
 
-      // Solo incluir campos numéricos si tienen valor
-      if (teamForm.hits) payload.hits = Number(teamForm.hits);
-      if (teamForm.runs) payload.runs = Number(teamForm.runs);
-      if (teamForm.hr) payload.hr = Number(teamForm.hr);
-      if (teamForm.so) payload.so = Number(teamForm.so);
-      if (teamForm.power) payload.power = Number(teamForm.power);
-      if (teamForm.contact) payload.contact = Number(teamForm.contact);
-      if (teamForm.defense) payload.defense = Number(teamForm.defense);
-      if (teamForm.speed) payload.speed = Number(teamForm.speed);
+      // Solo incluir campos numéricos cuando son número válido (permitir 0)
+      const numericFields: Array<keyof TeamDoc> = ['hits', 'runs', 'hr', 'so', 'power', 'contact', 'defense', 'speed'];
+      numericFields.forEach((field) => {
+        const value = (teamForm as any)[field];
+        if (value === 0 || (value !== undefined && value !== null && !Number.isNaN(value))) {
+          payload[field] = Number(value);
+        }
+      });
 
       if (editingTeamId) {
         await updateDoc(doc(db, 'teams', editingTeamId), payload);
@@ -734,7 +733,7 @@ const AdminPage = () => {
                     <div>
                       <p className="text-sm text-white/70 font-semibold">Stats ofensivas / alternativas</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-2">
-                        {[
+                        {[ 
                           { key: 'hits', label: 'HITS' },
                           { key: 'runs', label: 'RUNS' },
                           { key: 'hr', label: 'HR' },
@@ -746,8 +745,11 @@ const AdminPage = () => {
                               type="number"
                               placeholder={f.label}
                               className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white"
-                              value={(teamForm as any)[f.key] || ''}
-                              onChange={(e) => setTeamForm({ ...teamForm, [f.key]: Number(e.target.value) })}
+                              value={(teamForm as any)[f.key] ?? ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTeamForm({ ...teamForm, [f.key]: val === '' ? undefined : Number(val) });
+                              }}
                             />
                           </div>
                         ))}
@@ -756,7 +758,7 @@ const AdminPage = () => {
                     <div>
                       <p className="text-sm text-white/70 font-semibold">Ratings alternativos</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mt-2">
-                        {[
+                        {[ 
                           { key: 'power', label: 'Poder' },
                           { key: 'contact', label: 'Contacto' },
                           { key: 'defense', label: 'Defensa' },
@@ -768,8 +770,11 @@ const AdminPage = () => {
                               type="number"
                               placeholder={f.label}
                               className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white"
-                              value={(teamForm as any)[f.key] || ''}
-                              onChange={(e) => setTeamForm({ ...teamForm, [f.key]: Number(e.target.value) })}
+                              value={(teamForm as any)[f.key] ?? ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTeamForm({ ...teamForm, [f.key]: val === '' ? undefined : Number(val) });
+                              }}
                             />
                           </div>
                         ))}
@@ -929,7 +934,13 @@ const AdminPage = () => {
                                       {entry.imageUrl && (
                                         <div className="flex items-center gap-2">
                                           <img src={entry.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                          <span className="text-xs text-white/60">✓ Archivo cargado</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleLeaderEntryChange('leadersBatting', idx, eIdx, 'imageUrl', '')}
+                                            className="text-[11px] px-2 py-1 rounded bg-habboBrick/80 text-white hover:bg-habboBrick"
+                                          >
+                                            Quitar
+                                          </button>
                                         </div>
                                       )}
                                     </div>
@@ -1019,7 +1030,13 @@ const AdminPage = () => {
                                     {entry.imageUrl && (
                                       <div className="flex items-center gap-2">
                                         <img src={entry.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
-                                        <span className="text-xs text-white/60">✓ Archivo cargado</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleLeaderEntryChange('leadersPitching', idx, eIdx, 'imageUrl', '')}
+                                          className="text-[11px] px-2 py-1 rounded bg-habboBrick/80 text-white hover:bg-habboBrick"
+                                        >
+                                          Quitar
+                                        </button>
                                       </div>
                                     )}
                                   </div>

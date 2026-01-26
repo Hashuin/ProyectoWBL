@@ -49,7 +49,7 @@ interface LeaderCardData {
   label: string;
   stat: string;
   leader: string;
-  leaderImageUrl?: string;
+  imageUrl?: string;
   position: string;
   entries: LeaderEntry[];
 }
@@ -780,6 +780,7 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
     label,
     stat,
     leader,
+    imageUrl,
     position,
     entries
   }: LeaderCardData) => (
@@ -792,8 +793,12 @@ const StatsPage = ({ teamsData }: { teamsData: TeamDoc[] }) => {
           <p className="text-xs text-white/60">{position}</p>
         </div>
         <div className="w-20 h-24 rounded-xl bg-white/8 border border-white/10 overflow-hidden flex-shrink-0">
-          {leader && (avatarMap[leader] || entries.find((e) => e.name === leader)?.imageUrl) && (
-            <img src={(entries.find((e) => e.name === leader)?.imageUrl) || avatarMap[leader]} alt={leader} className="w-full h-full object-contain p-1" />
+          {leader && (imageUrl || avatarMap[leader] || entries.find((e) => e.name === leader)?.imageUrl) && (
+            <img
+              src={imageUrl || entries.find((e) => e.name === leader)?.imageUrl || avatarMap[leader]}
+              alt={leader}
+              className="w-full h-full object-contain p-1"
+            />
           )}
         </div>
       </div>

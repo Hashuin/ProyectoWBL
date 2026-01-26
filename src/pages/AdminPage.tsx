@@ -46,6 +46,7 @@ interface LeaderCardData {
   stat: string;
   leader: string;
   position: string;
+  imageUrl?: string;
   entries: LeaderEntry[];
 }
 
@@ -433,6 +434,33 @@ const AdminPage = () => {
       draft[type][cardIdx].entries.push({ name: '', value: '', imageUrl: '' });
       return draft;
     });
+  };
+
+  const handleLeaderImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'leadersBatting' | 'leadersPitching',
+    cardIdx: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('La imagen es muy grande. Máximo 5MB.');
+      return;
+    }
+    try {
+      setUploading(true);
+      const url = await uploadImage(file);
+      setStatsForm((prev) => {
+        const draft = JSON.parse(JSON.stringify(prev)) as StatsDoc;
+        (draft as any)[type][cardIdx].imageUrl = url;
+        return draft;
+      });
+    } catch (err) {
+      console.error('Error subiendo icono principal', err);
+      setError('No se pudo subir el icono');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const removeLeaderEntry = (type: 'leadersBatting' | 'leadersPitching', cardIdx: number, entryIdx: number) => {
@@ -896,6 +924,28 @@ const AdminPage = () => {
                               <label className="block text-xs text-white/70">Posición / Equipo</label>
                               <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="SS - Falcons" value={card.position} onChange={(e) => handleLeaderChange('leadersBatting', idx, 'position', e.target.value)} />
                             </div>
+                            <div className="space-y-1">
+                              <label className="block text-xs text-white/70">Foto del líder (opcional)</label>
+                              <div className="flex items-center gap-3">
+                                <label className="cursor-pointer">
+                                  <input type="file" accept="image/*" onChange={(e) => handleLeaderImageUpload(e, 'leadersBatting', idx)} className="hidden" />
+                                  <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
+                                </label>
+                                <div className="flex items-center gap-2">
+                                  {card.imageUrl && (
+                                    <img src={card.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleLeaderChange('leadersBatting', idx, 'imageUrl' as any, '')}
+                                    className={`text-[11px] px-2 py-1 rounded ${card.imageUrl ? 'bg-habboBrick/80 hover:bg-habboBrick text-white' : 'bg-white/10 text-white/50 hover:bg-white/15'}`}
+                                    disabled={!card.imageUrl}
+                                  >
+                                    Quitar
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <div className="mt-3 space-y-3">
                             <p className="text-xs text-white/60 font-medium">Entradas del top:</p>
@@ -992,6 +1042,28 @@ const AdminPage = () => {
                           <div className="space-y-1">
                             <label className="block text-xs text-white/70">Posición / Equipo</label>
                             <input className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white" placeholder="P - Raptors" value={card.position} onChange={(e) => handleLeaderChange('leadersPitching', idx, 'position', e.target.value)} />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="block text-xs text-white/70">Foto del líder (opcional)</label>
+                            <div className="flex items-center gap-3">
+                              <label className="cursor-pointer">
+                                <input type="file" accept="image/*" onChange={(e) => handleLeaderImageUpload(e, 'leadersPitching', idx)} className="hidden" />
+                                <span className="inline-block px-4 py-2 text-xs rounded bg-white/10 border border-white/20 text-white hover:bg-white/15 transition-colors">Seleccionar archivo</span>
+                              </label>
+                              <div className="flex items-center gap-2">
+                                {card.imageUrl && (
+                                  <img src={card.imageUrl} alt="ico" className="h-10 w-10 rounded bg-white/10 border border-white/10 object-contain" />
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => handleLeaderChange('leadersPitching', idx, 'imageUrl' as any, '')}
+                                  className={`text-[11px] px-2 py-1 rounded ${card.imageUrl ? 'bg-habboBrick/80 hover:bg-habboBrick text-white' : 'bg-white/10 text-white/50 hover:bg-white/15'}`}
+                                  disabled={!card.imageUrl}
+                                >
+                                  Quitar
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div className="mt-3 space-y-3">

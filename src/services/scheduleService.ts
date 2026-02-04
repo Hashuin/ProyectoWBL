@@ -15,8 +15,10 @@ export interface GameSchedule {
   id?: string;
   homeTeam: string;
   awayTeam: string;
-  date: string;
-  time: string;
+  homeTeamLogo?: string;
+  awayTeamLogo?: string;
+  date?: string;
+  time?: string;
   stadium: string;
   status: 'Pretemporada' | 'Regular' | 'Postemporada';
   homeTeamScore?: number;

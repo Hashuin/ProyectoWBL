@@ -6,6 +6,8 @@ export default function ScheduleAdmin() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploadingHomeLog, setUploadingHomeLogo] = useState(false);
+  const [uploadingAwayLogo, setUploadingAwayLogo] = useState(false);
 
   const [formData, setFormData] = useState<Omit<GameSchedule, 'id' | 'createdAt'>>({
     homeTeam: '',
@@ -30,6 +32,65 @@ export default function ScheduleAdmin() {
       console.error('Error loading games:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const response = await fetch('https://api.imgbb.com/1/upload?key=53d55929203cca2897412059c25399d3', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al subir la imagen');
+    }
+    
+    const data = await response.json();
+    return data.data.display_url;
+  };
+
+  const handleHomeLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen es muy grande. Máximo 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingHomeLogo(true);
+      const url = await uploadImage(file);
+      setFormData({ ...formData, homeTeamLogo: url });
+    } catch (err) {
+      console.error('Error subiendo logo:', err);
+      alert('No se pudo subir el logo');
+    } finally {
+      setUploadingHomeLogo(false);
+    }
+  };
+
+  const handleAwayLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen es muy grande. Máximo 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingAwayLogo(true);
+      const url = await uploadImage(file);
+      setFormData({ ...formData, awayTeamLogo: url });
+    } catch (err) {
+      console.error('Error subiendo logo:', err);
+      alert('No se pudo subir el logo');
+    } finally {
+      setUploadingAwayLogo(false);
     }
   };
 
@@ -63,8 +124,10 @@ export default function ScheduleAdmin() {
     setFormData({
       homeTeam: game.homeTeam,
       awayTeam: game.awayTeam,
-      date: game.date,
-      time: game.time,
+      homeTeamLogo: game.homeTeamLogo,
+      awayTeamLogo: game.awayTeamLogo,
+      date: game.date || '',
+      time: game.time || '',
       stadium: game.stadium,
       status: game.status,
       finished: game.finished,
@@ -127,6 +190,24 @@ export default function ScheduleAdmin() {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">
+                  Logo Equipo Local
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleHomeLogoUpload}
+                    className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none text-sm"
+                    disabled={uploadingHomeLog}
+                  />
+                  {formData.homeTeamLogo && (
+                    <img src={formData.homeTeamLogo} alt="Logo Local" className="w-10 h-10 rounded object-cover" />
+                  )}
+                </div>
+                {uploadingHomeLog && <p className="text-yellow-400 text-xs mt-1">Subiendo...</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">
                   Equipo Visitante
                 </label>
                 <input
@@ -138,14 +219,32 @@ export default function ScheduleAdmin() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">
+                  Logo Equipo Visitante
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAwayLogoUpload}
+                    className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none text-sm"
+                    disabled={uploadingAwayLogo}
+                  />
+                  {formData.awayTeamLogo && (
+                    <img src={formData.awayTeamLogo} alt="Logo Visitante" className="w-10 h-10 rounded object-cover" />
+                  )}
+                </div>
+                {uploadingAwayLogo && <p className="text-yellow-400 text-xs mt-1">Subiendo...</p>}
+              </div>
+              <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">Fecha</label>
                 <input
                   type="date"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
-                  required
                 />
+                <p className="text-xs text-gray-400 mt-1">Opcional: deja vacío si no se ha acordado</p>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">Hora</label>
@@ -154,8 +253,8 @@ export default function ScheduleAdmin() {
                   value={formData.time}
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
-                  required
                 />
+                <p className="text-xs text-gray-400 mt-1">Opcional: deja vacío si no se ha acordado</p>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">Estadio</label>
@@ -271,15 +370,25 @@ export default function ScheduleAdmin() {
             >
               <div className="flex-1">
                 <div className="flex items-center gap-4">
+                  {game.homeTeamLogo && (
+                    <img src={game.homeTeamLogo} alt={game.homeTeam} className="w-8 h-8 rounded object-cover" />
+                  )}
                   <div>
                     <p className="font-bold text-white">
                       {game.homeTeam} vs {game.awayTeam}
                     </p>
                     <p className="text-sm text-gray-300">
-                      {game.date} - {game.time} ({game.stadium})
+                      {game.date && game.time ? (
+                        <>{game.date} - {game.time} ({game.stadium})</>
+                      ) : (
+                        <>Fecha no acordada ({game.stadium})</>
+                      )}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">{game.status}</p>
                   </div>
+                  {game.awayTeamLogo && (
+                    <img src={game.awayTeamLogo} alt={game.awayTeam} className="w-8 h-8 rounded object-cover" />
+                  )}
                   {game.finished && (
                     <div className="ml-4">
                       <p className="text-xl font-bold text-yellow-400">

@@ -78,8 +78,7 @@ export default function StandingsPage() {
                   <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">J</th>
                   <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">G</th>
                   <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">P</th>
-                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-xs sm:text-base">PCT</th>
-                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">GB</th>
+                  <th className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">E</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,12 +101,7 @@ export default function StandingsPage() {
                     <td className="px-2 sm:px-6 py-3 sm:py-4 text-center text-sm sm:text-base">{team.games}</td>
                     <td className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-green-400 text-sm sm:text-base">{team.wins}</td>
                     <td className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-red-400 text-sm sm:text-base">{team.losses}</td>
-                    <td className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-xs sm:text-base">
-                      {team.percentage.toFixed(3)}
-                    </td>
-                    <td className="px-2 sm:px-6 py-3 sm:py-4 text-center text-sm sm:text-base">
-                      {team.gamesBehind === 0 ? '-' : team.gamesBehind.toFixed(1)}
-                    </td>
+                    <td className="px-2 sm:px-6 py-3 sm:py-4 text-center font-bold text-yellow-400 text-sm sm:text-base">{team.ties}</td>
                   </tr>
                 ))}
               </tbody>

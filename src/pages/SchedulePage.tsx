@@ -86,6 +86,13 @@ export default function SchedulePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                   {/* Home Team */}
                   <div className="text-center">
+                    {game.homeTeamLogo && (
+                      <img 
+                        src={game.homeTeamLogo} 
+                        alt={game.homeTeam} 
+                        className="w-16 h-16 mx-auto mb-2 rounded object-cover"
+                      />
+                    )}
                     <h3 className="text-lg font-bold text-yellow-400">{game.homeTeam}</h3>
                     {game.finished && (
                       <p className="text-3xl font-bold mt-2">{game.homeTeamScore}</p>
@@ -94,13 +101,28 @@ export default function SchedulePage() {
 
                   {/* Time and Details */}
                   <div className="text-center border-t border-b border-gray-600 py-4">
-                    <p className="text-2xl font-bold text-yellow-300">{game.time}</p>
-                    <p className="text-sm text-gray-300">{game.date}</p>
+                    {game.date && game.time ? (
+                      <>
+                        <p className="text-2xl font-bold text-yellow-300">{game.time}</p>
+                        <p className="text-sm text-gray-300">{game.date}</p>
+                      </>
+                    ) : (
+                      <p className="text-lg font-semibold text-yellow-300">
+                        Fecha del partido no acordada
+                      </p>
+                    )}
                     <p className="text-xs text-gray-400 mt-2">📍 {game.stadium}</p>
                   </div>
 
                   {/* Away Team */}
                   <div className="text-center">
+                    {game.awayTeamLogo && (
+                      <img 
+                        src={game.awayTeamLogo} 
+                        alt={game.awayTeam} 
+                        className="w-16 h-16 mx-auto mb-2 rounded object-cover"
+                      />
+                    )}
                     <h3 className="text-lg font-bold text-yellow-400">{game.awayTeam}</h3>
                     {game.finished && (
                       <p className="text-3xl font-bold mt-2">{game.awayTeamScore}</p>

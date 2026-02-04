@@ -19,8 +19,7 @@ export interface TeamStanding {
   games: number;
   wins: number;
   losses: number;
-  percentage: number;
-  gamesBehind: number;
+  ties: number;
   division: string;
   createdAt?: Timestamp;
 }

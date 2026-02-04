@@ -14,8 +14,7 @@ export default function StandingsAdmin() {
     games: 0,
     wins: 0,
     losses: 0,
-    percentage: 0,
-    gamesBehind: 0
+    ties: 0
   });
 
   useEffect(() => {
@@ -37,21 +36,19 @@ export default function StandingsAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Calculate percentage
-    const totalGames = formData.wins + formData.losses;
-    const percentage = totalGames > 0 ? formData.wins / totalGames : 0;
+    // Calculate total games
+    const totalGames = formData.wins + formData.losses + formData.ties;
 
-    const dataWithPercentage = {
+    const dataWithGames = {
       ...formData,
-      percentage,
       games: totalGames
     };
 
     try {
       if (editingId) {
-        await standingsService.updateTeamStanding(editingId, dataWithPercentage);
+        await standingsService.updateTeamStanding(editingId, dataWithGames);
       } else {
-        await standingsService.addTeamStanding(dataWithPercentage);
+        await standingsService.addTeamStanding(dataWithGames);
       }
       await loadStandings();
       resetForm();
@@ -80,8 +77,7 @@ export default function StandingsAdmin() {
       games: standing.games,
       wins: standing.wins,
       losses: standing.losses,
-      percentage: standing.percentage,
-      gamesBehind: standing.gamesBehind
+      ties: standing.ties
     });
     setEditingId(standing.id || null);
     setShowForm(true);
@@ -95,8 +91,7 @@ export default function StandingsAdmin() {
       games: 0,
       wins: 0,
       losses: 0,
-      percentage: 0,
-      gamesBehind: 0
+      ties: 0
     });
     setEditingId(null);
     setShowForm(false);
@@ -204,15 +199,12 @@ export default function StandingsAdmin() {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">
-                  Juegos de Diferencia
+                  Empates
                 </label>
                 <input
                   type="number"
-                  step="0.5"
-                  value={formData.gamesBehind}
-                  onChange={(e) =>
-                    setFormData({ ...formData, gamesBehind: parseFloat(e.target.value) })
-                  }
+                  value={formData.ties}
+                  onChange={(e) => setFormData({ ...formData, ties: parseInt(e.target.value) })}
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
                   required
                 />
@@ -250,11 +242,10 @@ export default function StandingsAdmin() {
                     <tr className="bg-gray-800 border-b border-gray-600">
                       <th className="px-4 py-2 text-left text-sm font-bold">#</th>
                       <th className="px-4 py-2 text-left text-sm font-bold">Equipo</th>
+                      <th className="px-4 py-2 text-center text-sm font-bold">J</th>
                       <th className="px-4 py-2 text-center text-sm font-bold">G</th>
-                      <th className="px-4 py-2 text-center text-sm font-bold">V</th>
-                      <th className="px-4 py-2 text-center text-sm font-bold">D</th>
-                      <th className="px-4 py-2 text-center text-sm font-bold">ACC</th>
-                      <th className="px-4 py-2 text-center text-sm font-bold">GD</th>
+                      <th className="px-4 py-2 text-center text-sm font-bold">P</th>
+                      <th className="px-4 py-2 text-center text-sm font-bold">E</th>
                       <th className="px-4 py-2 text-center text-sm font-bold">Acciones</th>
                     </tr>
                   </thead>
@@ -280,11 +271,8 @@ export default function StandingsAdmin() {
                           <td className="px-4 py-2 text-center text-sm font-bold text-red-400">
                             {team.losses}
                           </td>
-                          <td className="px-4 py-2 text-center text-sm">
-                            {team.percentage.toFixed(3)}
-                          </td>
-                          <td className="px-4 py-2 text-center text-sm">
-                            {team.gamesBehind === 0 ? '-' : team.gamesBehind.toFixed(1)}
+                          <td className="px-4 py-2 text-center text-sm font-bold text-yellow-400">
+                            {team.ties}
                           </td>
                           <td className="px-4 py-2 text-center">
                             <button

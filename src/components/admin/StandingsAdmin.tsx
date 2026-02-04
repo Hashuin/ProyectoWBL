@@ -10,7 +10,7 @@ export default function StandingsAdmin() {
   const [formData, setFormData] = useState<Omit<TeamStanding, 'id' | 'createdAt'>>({
     rank: 1,
     teamName: '',
-    division: 'Este',
+    division: 'Regular',
     games: 0,
     wins: 0,
     losses: 0,
@@ -87,7 +87,7 @@ export default function StandingsAdmin() {
     setFormData({
       rank: 1,
       teamName: '',
-      division: 'Este',
+      division: 'Regular',
       games: 0,
       wins: 0,
       losses: 0,
@@ -156,7 +156,7 @@ export default function StandingsAdmin() {
                   onChange={(e) => setFormData({ ...formData, division: e.target.value })}
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
                 >
-                  <option value="Este">Este</option>
+                  <option value="Regular">Regular</option>
                   <option value="Oeste">Oeste</option>
                   <option value="Central">Central</option>
                 </select>

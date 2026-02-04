@@ -203,10 +203,13 @@ export default function StandingsAdmin() {
                 </label>
                 <input
                   type="number"
-                  value={formData.ties}
-                  onChange={(e) => setFormData({ ...formData, ties: parseInt(e.target.value) })}
+                  value={formData.ties ?? ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData({ ...formData, ties: value === '' ? 0 : parseInt(value, 10) });
+                  }}
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
-                  required
+                  placeholder="0"
                 />
               </div>
             </div>

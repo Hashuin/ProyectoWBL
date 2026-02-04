@@ -138,7 +138,7 @@ const seasons = [
     name: 'Season 1 · 2026',
     status: 'Próxima',
     highlight: 'Apertura de la primera temporada de la World Baseball League.',
-    starts: 'Por definir'
+    starts: 'Febrero 04'
   }
 ];
 
@@ -632,7 +632,7 @@ const HomePage = () => {
         <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
           <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
             <p className="text-xs sm:text-sm text-white/70 mb-1">Arranque temporada</p>
-            <p className="font-semibold text-base sm:text-lg">Por definir.</p>
+            <p className="font-semibold text-base sm:text-lg">Febrero 04</p>
           </div>
           <div className="p-3 sm:p-4 rounded-xl bg-habboInk/70 border border-white/10">
             <p className="text-xs sm:text-sm text-white/70 mb-1">Estadio</p>

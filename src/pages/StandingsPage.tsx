@@ -28,6 +28,11 @@ export default function StandingsPage() {
     }
   };
 
+  // Mapeo para normalizar nombres de división (Este -> Regular)
+  const normalizeDivision = (division: string): string => {
+    return division === 'Este' ? 'Regular' : division;
+  };
+
   const divisions = Array.from(new Set(standings.map(s => s.division)));
   const filteredStandings = standings.filter(s => s.division === selectedDivision);
 
@@ -53,7 +58,7 @@ export default function StandingsPage() {
                     : 'bg-gray-700 hover:bg-gray-600'
                 }`}
               >
-                {division}
+                {normalizeDivision(division)}
               </button>
             ))}
           </div>

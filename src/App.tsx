@@ -1056,7 +1056,11 @@ const RulesPage = () => (
         {rules.map((rule) => (
           <div key={rule.title} className="p-3 sm:p-5 rounded-xl bg-white/5 border border-white/10 hover:border-white/20">
             <h3 className="font-display text-base sm:text-lg mb-2 sm:mb-3">{rule.title}</h3>
-            <p className="text-white/75 leading-relaxed text-xs sm:text-sm">{rule.description}</p>
+            <div className="text-white/75 leading-relaxed text-xs sm:text-sm space-y-2">
+              {rule.description.split('\n').map((line, idx) => (
+                <p key={idx}>{line}</p>
+              ))}
+            </div>
           </div>
         ))}
       </div>

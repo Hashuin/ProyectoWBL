@@ -6,8 +6,10 @@ export default function ScheduleAdmin() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [uploadingHomeLog, setUploadingHomeLogo] = useState(false);
+  const [uploadingHomeLogo, setUploadingHomeLogo] = useState(false);
   const [uploadingAwayLogo, setUploadingAwayLogo] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [formData, setFormData] = useState<Omit<GameSchedule, 'id' | 'createdAt'>>({
     homeTeam: '',
@@ -22,6 +24,13 @@ export default function ScheduleAdmin() {
   useEffect(() => {
     loadGames();
   }, []);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const loadGames = async () => {
     setLoading(true);
@@ -96,16 +105,36 @@ export default function ScheduleAdmin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.homeTeam.trim() || !formData.awayTeam.trim() || !formData.stadium.trim()) {
+      setMessage({ type: 'error', text: 'Por favor completa los campos: Equipo Local, Equipo Visitante y Estadio' });
+      return;
+    }
+
+    setSubmitting(true);
+    setMessage(null);
+    
     try {
+      // Filtrar campos undefined antes de enviar
+      const cleanedData = Object.fromEntries(
+        Object.entries(formData).filter(([_, value]) => value !== undefined)
+      );
+
       if (editingId) {
-        await scheduleService.updateGame(editingId, formData);
+        await scheduleService.updateGame(editingId, cleanedData as Partial<GameSchedule>);
+        setMessage({ type: 'success', text: 'Partido actualizado correctamente' });
       } else {
-        await scheduleService.addGame(formData);
+        await scheduleService.addGame(cleanedData as Omit<GameSchedule, 'id' | 'createdAt'>);
+        setMessage({ type: 'success', text: 'Partido creado correctamente' });
       }
+      await new Promise(resolve => setTimeout(resolve, 500));
       await loadGames();
       resetForm();
     } catch (error) {
       console.error('Error saving game:', error);
+      setMessage({ type: 'error', text: `Error al guardar: ${error instanceof Error ? error.message : 'Error desconocido'}` });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -198,13 +227,13 @@ export default function ScheduleAdmin() {
                     accept="image/*"
                     onChange={handleHomeLogoUpload}
                     className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none text-sm"
-                    disabled={uploadingHomeLog}
+                    disabled={uploadingHomeLogo}
                   />
                   {formData.homeTeamLogo && (
                     <img src={formData.homeTeamLogo} alt="Logo Local" className="w-10 h-10 rounded object-cover" />
                   )}
                 </div>
-                {uploadingHomeLog && <p className="text-yellow-400 text-xs mt-1">Subiendo...</p>}
+                {uploadingHomeLogo && <p className="text-yellow-400 text-xs mt-1">Subiendo...</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-200 mb-2">
@@ -337,12 +366,19 @@ export default function ScheduleAdmin() {
               </label>
             </div>
 
+            {message && (
+              <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-900/30 border border-green-600 text-green-300' : 'bg-red-900/30 border border-red-600 text-red-300'}`}>
+                {message.text}
+              </div>
+            )}
+
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                disabled={submitting}
+                className="bg-green-600 hover:bg-green-500 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-semibold transition-colors"
               >
-                {editingId ? 'Guardar Cambios' : 'Crear Partido'}
+                {submitting ? 'Guardando...' : editingId ? 'Guardar Cambios' : 'Crear Partido'}
               </button>
               <button
                 type="button"

@@ -1,55 +1,88 @@
 # Habbo WBL – Liga de Baseball ⚾
 
-Sitio web oficial de la **World Baseball League (WBL)** en Hobbaz, con estética Habbo, panel de administración y contenido público de la liga (noticias, equipos, programación, clasificación, estadísticas, reglas, FAQ y créditos).
+Sitio web oficial de la **World Baseball League (WBL)** en Hobbaz, con estética Habbo y panel de administración para operar contenido dinámico de la liga en Firebase.
 
-## 📌 Versión actual
+## 📌 Estado actual
 
-**v1.0.0**
+- **Versión funcional documentada:** `v1.0.0`
+- **Versión en package.json:** `0.0.1`
 
-## 🎯 ¿De qué trata el proyecto?
+## 🎯 Objetivo del proyecto
 
-Proyecto SPA orientado a la gestión y visualización de una liga de baseball roleplay en Habbo.
+Aplicación SPA para gestionar y mostrar:
 
-- **Frontend público** para jugadores y visitantes.
-- **Panel admin protegido** para gestionar contenido en Firebase.
-- **Programación y clasificación** con carga dinámica desde Firestore.
-- **Diseño responsive** para desktop, tablet y mobile.
+- Noticias de la liga
+- Equipos y roster
+- Estadísticas y líderes
+- Programación de partidos
+- Clasificación por división
+- Reglas y FAQ
+- Créditos del staff fundador
 
-## 🧩 Secciones del sitio
+## 🧩 Funcionalidades actuales
+
+### Frontend público
+
+- Navegación SPA con rutas públicas.
+- Carga de datos desde Firestore (noticias, equipos, stats, schedule, standings).
+- Diseño responsive con Tailwind y estética Habbo.
+- Sección de programación con orden avanzado por fase/ronda.
+
+### Panel de administración (protegido)
+
+- Login con Firebase Auth.
+- Gestión de **Noticias** (crear, previsualizar, eliminar).
+- Gestión de **Equipos** (datos, logo, lineup, ratings/stats).
+- Gestión de **Estadísticas** (campeón, equipo destacado, líderes bateo/pitcheo con entradas e imágenes).
+- Gestión de **Programación**:
+	- Crear/editar/eliminar partidos.
+	- Subida de logos local/visitante.
+	- Estado de partido y marcador final.
+	- Campo `Ronda` (acepta texto libre + sugerencias: Ronda N, Semifinal, Final).
+	- Permite dejar la ronda vacía y limpiar el campo en edición.
+- Gestión de **Clasificación** por divisiones.
+
+## 🗺️ Rutas disponibles
 
 ### Públicas
 
-- `/` — Inicio y noticias
-- `/stats` — Estadísticas y líderes
-- `/seasons` — Temporadas
-- `/faq` — Preguntas frecuentes
-- `/teams` — Equipos
-- `/rules` — Reglamento
-- `/founders` — Créditos
-- `/schedule` — Programación
-- `/standings` — Clasificación
+- `/` → Inicio
+- `/stats` → Estadísticas
+- `/seasons` → Temporadas
+- `/faq` → Preguntas frecuentes
+- `/teams` → Equipos
+- `/rules` → Reglas
+- `/founders` → Créditos
+- `/schedule` → Programación
+- `/standings` → Clasificación
 
-### Administración
+### Admin
 
-- `/admin-wbl-2026/login` — Login admin
-- `/admin-wbl-2026` — Panel admin protegido
-	- Gestión de noticias
-	- Gestión de equipos
-	- Gestión de estadísticas
-	- Gestión de programación
-	- Gestión de clasificación
+- `/admin-wbl-2026/login` → Acceso admin
+- `/admin-wbl-2026` → Panel admin protegido (`ProtectedRoute`)
 
 ## 🛠️ Stack técnico
 
 - React 18 + Vite 6 + TypeScript
 - Tailwind CSS
 - React Router
-- Firebase (Auth + Firestore)
+- Firebase:
+	- Authentication
+	- Firestore
+	- Storage (inicializado)
 
-## 📋 Requisitos
+## 🔐 Variables de entorno (Firebase)
 
-- Node.js 18+
-- npm
+Definir en `.env`:
+
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
 
 ## 🚀 Scripts
 
@@ -85,25 +118,38 @@ src/
 		standingsService.ts
 ```
 
+## 📚 Regla de orden en Programación
+
+En `SchedulePage`, los partidos se ordenan así:
+
+1. **Fase/ronda más alta primero**:
+	 - `Final` > `Semifinal` > `Ronda N` (descendente)
+2. Dentro de la misma ronda:
+	 - partidos **no finalizados** arriba
+	 - partidos **finalizados** debajo
+3. Entre no finalizados:
+	 - con fecha/hora acordada arriba
+	 - sin fecha/hora debajo
+
 ## 🔄 Changelog
 
 ### v1.0.0 - 2026-03-05
 
-- Base estable del sitio público WBL con secciones principales.
+- Base estable del sitio público WBL.
 - Integración de panel admin con autenticación.
-- Gestión de programación y clasificación conectada a Firestore.
-- Campo de **ronda** en programación (admin + vista pública).
-- Soporte de etiquetas de ronda numéricas y fases especiales (**Semifinal**, **Final**).
-- Orden avanzado en programación:
-	- primero por fase/ronda (más alta arriba),
-	- luego partidos no finalizados sobre finalizados,
-	- en no finalizados, con fecha acordada arriba y sin fecha debajo.
-- Posibilidad de dejar la ronda en blanco y limpiar el campo al editar.
+- CRUD funcional para noticias, equipos, programación y clasificación.
+- Configuración de estadísticas dinámicas (campeón, destacado, líderes).
+- Campo de ronda en programación con soporte de:
+	- `Ronda N`
+	- `Semifinal`
+	- `Final`
+- Orden avanzado de programación por fase, finalización y fecha acordada.
+- Posibilidad de dejar la ronda en blanco y limpiar ese campo en edición.
 
 ## 🌐 Deploy
 
-- Recomendado: Netlify (ver `NETLIFY_DEPLOYMENT.md`).
-- Compatible con cualquier hosting estático (Vercel, Firebase Hosting, etc.).
+- Recomendado: Netlify (`NETLIFY_DEPLOYMENT.md`)
+- Compatible con hosting estático (Vercel, Firebase Hosting, etc.)
 
 ---
 

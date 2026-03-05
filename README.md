@@ -1,124 +1,110 @@
 # Habbo WBL – Liga de Baseball ⚾
 
- Sitio web responsivo con estética Habbo para la World Baseball League. Incluye múltiples secciones: inicio/noticias, estadísticas MLB-style, temporadas, FAQ, equipos, reglas y créditos. Completamente responsive para desktop, tablet y mobile.
+Sitio web oficial de la **World Baseball League (WBL)** en Hobbaz, con estética Habbo, panel de administración y contenido público de la liga (noticias, equipos, programación, clasificación, estadísticas, reglas, FAQ y créditos).
 
-## 🎨 Características
+## 📌 Versión actual
 
-- ✅ **Diseño Habbo**: Paleta de colores personalizada, fuentes pixel-friendly
-- ✅ **Responsive**: Mobile-first, optimizado para todos los tamaños de pantalla
-- ✅ **SPA (Single Page Application)**: Navegación rápida con React Router
-- ✅ **Accesible**: Focus states, reduced motion support, WCAG compliance
-- ✅ **Animaciones**: Efectos float, pulse, shimmer, fade-in
-- ✅ **MLB Statistics**: Tablas de líderes, rankings, estadísticas detalladas
-- ✅ **7 Páginas**: Inicio, Estadísticas, Temporadas, FAQ, Equipos, Reglas, Créditos
+**v1.0.0**
+
+## 🎯 ¿De qué trata el proyecto?
+
+Proyecto SPA orientado a la gestión y visualización de una liga de baseball roleplay en Habbo.
+
+- **Frontend público** para jugadores y visitantes.
+- **Panel admin protegido** para gestionar contenido en Firebase.
+- **Programación y clasificación** con carga dinámica desde Firestore.
+- **Diseño responsive** para desktop, tablet y mobile.
+
+## 🧩 Secciones del sitio
+
+### Públicas
+
+- `/` — Inicio y noticias
+- `/stats` — Estadísticas y líderes
+- `/seasons` — Temporadas
+- `/faq` — Preguntas frecuentes
+- `/teams` — Equipos
+- `/rules` — Reglamento
+- `/founders` — Créditos
+- `/schedule` — Programación
+- `/standings` — Clasificación
+
+### Administración
+
+- `/admin-wbl-2026/login` — Login admin
+- `/admin-wbl-2026` — Panel admin protegido
+	- Gestión de noticias
+	- Gestión de equipos
+	- Gestión de estadísticas
+	- Gestión de programación
+	- Gestión de clasificación
+
+## 🛠️ Stack técnico
+
+- React 18 + Vite 6 + TypeScript
+- Tailwind CSS
+- React Router
+- Firebase (Auth + Firestore)
 
 ## 📋 Requisitos
 
-- **Node.js 18+** y **npm** (necesarios para compilar/servir)
-- Si no los tienes, instálalos desde https://nodejs.org
+- Node.js 18+
+- npm
 
 ## 🚀 Scripts
 
 ```bash
-npm install       # Instala dependencias
-npm run dev       # Local dev server en http://localhost:5173
-npm run build     # Genera build para producción (carpeta dist/)
-npm run preview   # Sirve la build local para verificación
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-## 📦 Stack
+## 📁 Estructura principal
 
-- **React 18.3** + **Vite 6** + **TypeScript 5.6**
-- **Tailwind CSS 3.4** para utilidades y diseño responsivo
-- **react-router-dom 6** para enrutamiento SPA
-- **Fuentes**: Press Start 2P (badges), Space Grotesk (títulos), Inter (cuerpo)
-
-## 🗂️ Estructura
-
-```
+```text
 src/
-├── App.tsx              # Layout principal, rutas, componentes y datos estáticos
-├── main.tsx             # Punto de entrada React
-└── index.css            # Estilos globales, animaciones, reduced-motion
-
-public/
-tailwind.config.js       # Configuración Tailwind, colores Habbo, animaciones
-vite.config.ts           # Configuración Vite
-netlify.toml             # Configuración para Netlify deployment
-package.json
+	App.tsx
+	main.tsx
+	index.css
+	firebase.ts
+	components/
+		ProtectedRoute.tsx
+		admin/
+			ScheduleAdmin.tsx
+			StandingsAdmin.tsx
+	contexts/
+		AuthContext.tsx
+	pages/
+		AdminPage.tsx
+		LoginPage.tsx
+		SchedulePage.tsx
+		StandingsPage.tsx
+	services/
+		scheduleService.ts
+		standingsService.ts
 ```
 
-## 📄 Páginas
+## 🔄 Changelog
 
-| Ruta | Nombre | Contenido |
-|------|--------|----------|
-| `/` | Inicio | Noticias, CTA, información general |
-| `/stats` | Estadísticas | Líderes MLB-style, tabla general, campeón actual |
-| `/seasons` | Temporadas | Información de temporadas actuales |
-| `/faq` | Preguntas frecuentes | Q&A sobre la liga |
-| `/teams` | Equipos | Datos de los 4 equipos principales |
-| `/rules` | Reglas | Reglamento oficial |
-| `/credits` | Créditos | Fundadores, creadores y contribuidores |
+### v1.0.0 - 2026-03-05
 
-## 🎮 Personalización
+- Base estable del sitio público WBL con secciones principales.
+- Integración de panel admin con autenticación.
+- Gestión de programación y clasificación conectada a Firestore.
+- Campo de **ronda** en programación (admin + vista pública).
+- Soporte de etiquetas de ronda numéricas y fases especiales (**Semifinal**, **Final**).
+- Orden avanzado en programación:
+	- primero por fase/ronda (más alta arriba),
+	- luego partidos no finalizados sobre finalizados,
+	- en no finalizados, con fecha acordada arriba y sin fecha debajo.
+- Posibilidad de dejar la ronda en blanco y limpiar el campo al editar.
 
-Todos los datos están en `src/App.tsx` en arrays estáticos:
-- `news` — Artículos de inicio
-- `teams` — Información de equipos
-- `seasons` — Datos de temporadas
-- `faqs` — Preguntas frecuentes
-- `rules` — Reglamento
-- `founders` — Créditos
-- `battingLeaders`, `pitchingLeaders`, `fieldingLeaders` — Estadísticas
+## 🌐 Deploy
 
-Edita estos datos directamente en el código y ejecuta `npm run dev` para ver cambios en tiempo real.
-
-## 🌐 Deployment
-
-### Opción 1: Netlify (Recomendado - Fácil y Gratis)
-
-Ver [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md) para instrucciones detalladas.
-
-**Resumen rápido:**
-1. Push el código a GitHub
-2. Conecta tu repositorio a Netlify
-3. ¡Deploy automático en cada push!
-
-URL gratis: `tu-proyecto.netlify.app`
-
-### Opción 2: Vercel, GitHub Pages u otros
-
-El proyecto es una SPA estática. Funciona en cualquier hosting de archivos estáticos:
-- **Vercel**: Importa desde GitHub, auto-deploy
-- **GitHub Pages**: Configura `gh-pages` en package.json
-- **Firebase Hosting**: `firebase deploy`
-
-## 🔧 Configuración Responsive
-
-El proyecto usa Tailwind breakpoints:
-- `sm: 640px` — Tablets pequeñas
-- `md: 768px` — Tablets
-- `lg: 1024px` — Desktops
-
-Todos los componentes están optimizados con:
-- Tipografía escalable: `text-xs sm:text-sm md:text-base`
-- Padding responsive: `p-4 sm:p-5 md:p-6`
-- Grids adaptables: `grid gap-4 sm:gap-5 md:grid-cols-2`
-
-## ✨ Próximos Pasos
-
-1. **Desarrollo local**: `npm install && npm run dev`
-2. **Hacer cambios**: Edita `src/App.tsx`, datos en arrays
-3. **Build**: `npm run build` genera carpeta `dist/`
-4. **Deploy**: Sube a Netlify siguiendo [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)
-
-## 🎯 Notas
-
-- La navegación móvil se muestra como hamburger menu en pantallas < 768px
-- Todos los botones y links tienen estados focus accesibles
-- Las animaciones respetan `prefers-reduced-motion`
-- La tabla de estadísticas es responsive con truncation en mobile
+- Recomendado: Netlify (ver `NETLIFY_DEPLOYMENT.md`).
+- Compatible con cualquier hosting estático (Vercel, Firebase Hosting, etc.).
 
 ---
 
-**Creado para la World Baseball League 🌍⚾**
+Desarrollado para la comunidad de la **World Baseball League** 🌍⚾

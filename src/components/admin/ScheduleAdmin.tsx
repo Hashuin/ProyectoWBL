@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { deleteField } from 'firebase/firestore';
 import { scheduleService, GameSchedule } from '../../services/scheduleService';
 
 export default function ScheduleAdmin() {
@@ -118,18 +119,30 @@ export default function ScheduleAdmin() {
     try {
       // Filtrar campos undefined antes de enviar
       const cleanedData = Object.fromEntries(
-        Object.entries(formData).filter(([key, value]) => {
-          if (value === undefined) return false;
-          if (key === 'round' && typeof value === 'string' && value.trim() === '') return false;
-          return true;
-        })
+        Object.entries(formData).filter(([_, value]) => value !== undefined)
       );
 
       if (editingId) {
-        await scheduleService.updateGame(editingId, cleanedData as Partial<GameSchedule>);
+        const updatePayload: Record<string, unknown> = {
+          ...cleanedData
+        };
+
+        if (typeof formData.round === 'string' && formData.round.trim() === '') {
+          updatePayload.round = deleteField();
+        }
+
+        await scheduleService.updateGame(editingId, updatePayload as Partial<GameSchedule>);
         setMessage({ type: 'success', text: 'Partido actualizado correctamente' });
       } else {
-        await scheduleService.addGame(cleanedData as Omit<GameSchedule, 'id' | 'createdAt'>);
+        const createPayload: Record<string, unknown> = {
+          ...cleanedData
+        };
+
+        if (typeof createPayload.round === 'string' && createPayload.round.trim() === '') {
+          delete createPayload.round;
+        }
+
+        await scheduleService.addGame(createPayload as Omit<GameSchedule, 'id' | 'createdAt'>);
         setMessage({ type: 'success', text: 'Partido creado correctamente' });
       }
       await new Promise(resolve => setTimeout(resolve, 500));

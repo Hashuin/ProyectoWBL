@@ -14,6 +14,7 @@ export default function ScheduleAdmin() {
   const [formData, setFormData] = useState<Omit<GameSchedule, 'id' | 'createdAt'>>({
     homeTeam: '',
     awayTeam: '',
+    round: '',
     date: '',
     time: '',
     stadium: '',
@@ -117,7 +118,11 @@ export default function ScheduleAdmin() {
     try {
       // Filtrar campos undefined antes de enviar
       const cleanedData = Object.fromEntries(
-        Object.entries(formData).filter(([_, value]) => value !== undefined)
+        Object.entries(formData).filter(([key, value]) => {
+          if (value === undefined) return false;
+          if (key === 'round' && typeof value === 'string' && value.trim() === '') return false;
+          return true;
+        })
       );
 
       if (editingId) {
@@ -153,6 +158,7 @@ export default function ScheduleAdmin() {
     setFormData({
       homeTeam: game.homeTeam,
       awayTeam: game.awayTeam,
+      round: game.round || '',
       homeTeamLogo: game.homeTeamLogo,
       awayTeamLogo: game.awayTeamLogo,
       date: game.date || '',
@@ -171,6 +177,7 @@ export default function ScheduleAdmin() {
     setFormData({
       homeTeam: '',
       awayTeam: '',
+      round: '',
       date: '',
       time: '',
       stadium: '',
@@ -312,6 +319,24 @@ export default function ScheduleAdmin() {
                   <option value="Postemporada">Postemporada</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Ronda</label>
+                <input
+                  type="text"
+                  value={formData.round || ''}
+                  onChange={(e) => setFormData({ ...formData, round: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg border border-gray-500 focus:border-yellow-400 focus:outline-none"
+                  placeholder="Ej: Ronda 1, Semifinal o Final"
+                  list="round-options"
+                />
+                <datalist id="round-options">
+                  <option value="Ronda 1" />
+                  <option value="Ronda 2" />
+                  <option value="Ronda 3" />
+                  <option value="Semifinal" />
+                  <option value="Final" />
+                </datalist>
+              </div>
             </div>
 
             {/* Score inputs if finished */}
@@ -420,7 +445,14 @@ export default function ScheduleAdmin() {
                         <>Fecha no acordada ({game.stadium})</>
                       )}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">{game.status}</p>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      <p className="text-xs text-gray-400">{game.status}</p>
+                      {game.round && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                          {game.round}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {game.awayTeamLogo && (
                     <img src={game.awayTeamLogo} alt={game.awayTeam} className="w-8 h-8 rounded object-cover" />

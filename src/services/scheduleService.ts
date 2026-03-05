@@ -15,6 +15,7 @@ export interface GameSchedule {
   id?: string;
   homeTeam: string;
   awayTeam: string;
+  round?: string;
   homeTeamLogo?: string;
   awayTeamLogo?: string;
   date?: string;

@@ -6,6 +6,29 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<'Pretemporada' | 'Regular' | 'Postemporada'>('Regular');
 
+  const getRoundPriority = (round?: string): number => {
+    if (!round) return 0;
+
+    const normalized = round.trim().toLowerCase();
+
+    if (normalized.includes('final')) {
+      if (normalized.includes('semi')) return 1000;
+      return 2000;
+    }
+
+    const match = normalized.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  };
+
+  const hasAgreedDate = (game: GameSchedule): boolean => {
+    return Boolean(game.date && game.time);
+  };
+
+  const getDateTimeValue = (game: GameSchedule): number => {
+    if (!hasAgreedDate(game)) return Number.POSITIVE_INFINITY;
+    return new Date(`${game.date}T${game.time}`).getTime();
+  };
+
   useEffect(() => {
     loadGames();
   }, []);
@@ -22,7 +45,35 @@ export default function SchedulePage() {
     }
   };
 
-  const filteredGames = games.filter(game => game.status === selectedStatus);
+  const filteredGames = games
+    .filter(game => game.status === selectedStatus)
+    .sort((a, b) => {
+      const roundDiff = getRoundPriority(b.round) - getRoundPriority(a.round);
+      if (roundDiff !== 0) return roundDiff;
+
+      if (a.finished !== b.finished) {
+        return a.finished ? 1 : -1;
+      }
+
+      if (!a.finished && !b.finished) {
+        const aHasDate = hasAgreedDate(a);
+        const bHasDate = hasAgreedDate(b);
+
+        if (aHasDate !== bHasDate) {
+          return aHasDate ? -1 : 1;
+        }
+
+        if (aHasDate && bHasDate) {
+          return getDateTimeValue(a) - getDateTimeValue(b);
+        }
+      }
+
+      if (a.finished && b.finished) {
+        return getDateTimeValue(a) - getDateTimeValue(b);
+      }
+
+      return a.homeTeam.localeCompare(b.homeTeam);
+    });
 
   const statusColors: Record<string, string> = {
     'Pretemporada': 'bg-blue-100 text-blue-800',
@@ -73,9 +124,16 @@ export default function SchedulePage() {
                 className="bg-gray-700 rounded-lg p-6 hover:bg-gray-600 transition-colors border-l-4 border-yellow-400"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColors[game.status]}`}>
-                    {game.status}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColors[game.status]}`}>
+                      {game.status}
+                    </span>
+                    {game.round && (
+                      <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                        {game.round}
+                      </span>
+                    )}
+                  </div>
                   {game.finished && (
                     <span className="px-3 py-1 bg-green-600 text-white rounded-full text-sm font-semibold">
                       Finalizado
